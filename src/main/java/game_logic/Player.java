@@ -1,12 +1,13 @@
 package game_logic;
 
 public enum Player {
-    WHITE("White", false),  //TODO change DataType
-    BLACK("Black", true);   //TODO change DataType
+    WHITE("White", (short)0),
+    BLACK("Black", (short)1),
+    NEUTRAL("Neutral", (short)2);
 
     final String name;
-    final boolean value;
-    Player(String name, boolean value) {
+    final short value;
+    Player(String name, short value) {
         this.name = name;
         this.value = value;
     }
