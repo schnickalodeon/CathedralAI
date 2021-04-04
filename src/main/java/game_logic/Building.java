@@ -2,37 +2,50 @@ package game_logic;
 
 import game_logic.buildings.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Building {
     private final String name;
     private final Shape shape;
     private final Turnable turnable;
-    private final Player player;
+    private final PlayerColor playerColor;
 
-    protected Building(String name, Shape shape, Turnable turnable, Player player) {
+    protected Building(String name, Shape shape, Turnable turnable, PlayerColor playerColor) {
         this.name = name;
         this.shape = shape;
         this.turnable = turnable;
-        this.player = player;
+        this.playerColor = playerColor;
     }
 
-    public Map<Building, Integer> getAllBuildingsForPlayer(Player player) {
-        Map<Building, Integer> buildings = new HashMap<>();
-        buildings.put(new Tavern(player),2);
-        buildings.put(new Stable(player),2);
-        buildings.put(new Inn(player),2);
+    public static List<Building> getAllBuildingsForPlayer(Player player) {
 
-        buildings.put(new Bridge(player),1);
-        buildings.put(new Manor(player),1);
-        buildings.put(new Square(player),1);
-        buildings.put(new Abbey(player),1);
-        buildings.put(new Infirmary(player),1);
-        buildings.put(new Castle(player),1);
-        buildings.put(new Tower(player),1);
+        PlayerColor color = player.getColor();
+
+        List<Building> buildings = new ArrayList<>();
+        buildings.add(new Tavern(color));
+        buildings.add(new Tavern(color));
+
+        buildings.add(new Stable(color));
+        buildings.add(new Stable(color));
+
+        buildings.add(new Inn(color));
+        buildings.add(new Inn(color));
+
+        buildings.add(new Bridge(color));
+        buildings.add(new Manor(color));
+        buildings.add(new Square(color));
+        buildings.add(new Abbey(color));
+        buildings.add(new Infirmary(color));
+        buildings.add(new Castle(color));
+        buildings.add(new Tower(color));
 
         return buildings;
+    }
+
+    public List<Point> getPoints(Point position) {
+        return shape.getPoints(position);
     }
 
 }
