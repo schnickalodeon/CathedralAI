@@ -70,6 +70,31 @@ public class Player {
         }
         return true;
     }
+
+    //for each x,y value, try every building in every rotation, check if its viable if so, add to a list.
+    public List<Move> generateValidMoves()
+    {
+        List<Move> ml = new ArrayList<>();
+        for (int x=0; x<10; x++)
+        {
+            for(int y=0; y<10; y++)
+            {
+                for(Building b: buildings)
+                {
+                    for(int r=0; r<3; r++)
+                    {
+                        Move m = new Move(new Point(x,y),b, Direction.values()[r],this);
+                        if(isPlaceable(m))
+                        {
+                            ml.add(m);
+                        }
+                    }
+                }
+            }
+        }
+        return ml;
+    }
+
     @Override
     public String toString() {
         return "Spieler " + name + "(" + color + ")";
