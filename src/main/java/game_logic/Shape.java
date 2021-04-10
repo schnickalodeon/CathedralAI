@@ -12,7 +12,7 @@ public class Shape {
         this.points = points;
     }
 
-    public List<Point> getPoints(Point position){
+    public List<Point> getPoints(Point position, Direction direction){
         List<Point> boardIndices = new ArrayList<>();
 
         for (Point point: points) {
