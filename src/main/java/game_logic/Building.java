@@ -65,5 +65,8 @@ public abstract class Building {
         return rotated;
     }
 
-
+    @Override
+    public String toString() {
+        return name;
+    }
 }
