@@ -19,6 +19,7 @@ public class Game {
     private int moveCount;
     private LocalTime startTurn;
     private LocalTime endTurn;
+    private int counter = 0;
 
     private ArrayList<Move> moves = new ArrayList<>();
 
@@ -66,6 +67,7 @@ public class Game {
             }
 
         } while(!wasSuccessful);
+        counter++;
         checkGameOver();
     }
 
@@ -83,7 +85,7 @@ public class Game {
             return cathedral;
 
         // White or Black
-        return (moves.size() % 2 == 0) ? white : black;
+        return (counter % 2 == 0) ? white : black;
     }
 
     private void appendGameFile(){
