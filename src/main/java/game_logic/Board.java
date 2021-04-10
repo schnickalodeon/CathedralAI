@@ -1,12 +1,19 @@
 package game_logic;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 
 
 public class Board {
     private static final int FIELD_COUNT = 100;
     private  FieldContent[] content = new FieldContent[FIELD_COUNT];
+
+    public Board()
+    {
+        Arrays.fill(content,FieldContent.EMPTY);
+        System.out.println("end board constructor!");
+    }
 
 
     public void setContent(List<Point> points, Player player)
@@ -18,33 +25,23 @@ public class Board {
         });
     }
 
-    public boolean isPlaceable(Move move){
-        List<Point> points = move.getOccupyingPoints();
-
-        for (Point point: points) {
-            FieldContent fieldContent = getContent(point.x, point.y);
-            if(fieldContent != FieldContent.EMPTY){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public void setContent(int x, int y, FieldContent fieldContent) {
-        int index = getIndexByCoordinates(x,y);
-        this.content[index] = fieldContent;
-    }
-
-    private FieldContent getContent(int x, int y) {
-        int index = getIndexByCoordinates(x, y);
+    public FieldContent getContent(Point p) {
+        int index = getIndexByPoint(p);
         return content[index];
     }
 
-    private int getIndexByCoordinates(int x, int y) {
-        assert x * y <= FIELD_COUNT;
+    private int getIndexByPoint(Point p) {
 
-        int pageLength = (int) Math.sqrt(FIELD_COUNT);
-        return pageLength * y + x;
+        int pageLength = Math.round((float)Math.sqrt(FIELD_COUNT));
+        assert p.x < pageLength && p.x >= 0;
+        assert p.y < pageLength && p.y >= 0;
+        return pageLength * p.y + p.x;
+    }
+
+
+    private int getIndexByCoordinates(int x, int y)
+    {
+        return getIndexByPoint(new Point(x,y));
     }
 
     public String getBoardHtml(){
@@ -71,4 +68,10 @@ public class Board {
         return sb.toString();
     }
 
+    public boolean isOutOfBounds(Point p)
+    {
+        int pageLength = Math.round((float) Math.sqrt(FIELD_COUNT));
+        return p.x >= pageLength || p.x < 0 ||
+                p.y >= pageLength || p.y < 0;
+    }
 }
