@@ -70,7 +70,11 @@ public class Game {
     }
 
     private void checkGameOver() {
-
+        if(white.getMoveList().size() == 0 && black.getMoveList().size() == 0 && moves.size() > 1)
+        {
+            System.out.println("game is over");
+            isFinished = true;
+        }
     }
 
     private Player getActivePlayer() {
