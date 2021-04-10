@@ -1,6 +1,7 @@
 package game_logic;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Move {
@@ -32,4 +33,9 @@ public class Move {
     }
 
     public Building getBuilding() { return building; }
+
+    public String toString()
+    {
+        return "building: " + building.toString() + " " + player.toString() + " x:" + position.x + " y:" + position.y;
+    }
 }
