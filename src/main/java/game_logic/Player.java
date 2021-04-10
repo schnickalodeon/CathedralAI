@@ -51,6 +51,10 @@ public class Player {
         List<Point> points = move.getOccupyingPoints();
 
         for (Point point: points) {
+            if(board.isOutOfBounds(point))
+            {
+                return false;
+            }
             FieldContent fieldContent = board.getContent(point);
             if(fieldContent != FieldContent.EMPTY){
                 return false;
@@ -58,7 +62,6 @@ public class Player {
         }
         return true;
     }
-
     @Override
     public String toString() {
         return "Spieler " + name + "(" + color + ")";
