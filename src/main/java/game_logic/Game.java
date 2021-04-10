@@ -20,9 +20,9 @@ public class Game {
     public Game() {
         this.board = new Board();
         this.moveCount = 0;
-        this.cathedral = new Player(PlayerColor.NEUTRAL,"Cathedral");
-        this.white = new Player(PlayerColor.WHITE,"Alice");
-        this.black = new Player(PlayerColor.BLACK,"Bob");
+        this.cathedral = new Player(PlayerColor.NEUTRAL,"Cathedral", board);
+        this.white = new Player(PlayerColor.WHITE,"Alice", board);
+        this.black = new Player(PlayerColor.BLACK,"Bob", board);
         this.isFinished = false;
     }
 
@@ -40,8 +40,7 @@ public class Game {
         do {
 
             Move move = ai.getMove(board,player);
-            wasSuccessful = board.place(move);
-
+            wasSuccessful = player.makeMove(move);
             if(wasSuccessful){
                 moves.add(move);
                 appendGameFile();

@@ -51,7 +51,7 @@ public abstract class Building {
         return rotated;
     }
 
-    protected List<Point> turn(Direction direction)
+    public List<Point> turn(Direction direction)
     {
         List<Point> rotated = new ArrayList<>();
         points.forEach(p->{

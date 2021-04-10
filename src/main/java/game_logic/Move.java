@@ -21,14 +21,15 @@ public class Move {
     }
 
     public List<Point> getOccupyingPoints() {
-        return building.getPoints(position, direction);
+
+        List<Point> shape =  building.getShape(direction);
+        shape.forEach(p ->
+        {
+            p.x += position.x;
+            p.y += position.y;
+        });
+        return shape;
     }
 
-
-    public void Place(Board board) {
-        List<Point> points = this.getOccupyingPoints();
-        FieldContent content = FieldContent.getOccupiedByPlayer(player);
-        points.forEach(p -> board.setContent(p.x,p.y,content));
-        player.removeBuildiung(building);
-    }
+    public Building getBuilding() { return building; }
 }

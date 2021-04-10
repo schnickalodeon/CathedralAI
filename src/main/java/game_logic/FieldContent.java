@@ -23,6 +23,7 @@ public enum FieldContent {
         switch (color){
             case BLACK -> { return FieldContent.BLACK_OCCUPIED; }
             case WHITE -> { return FieldContent.WHITE_OCCUPIED; }
+            case NEUTRAL -> { return FieldContent.CATHEDRAL; }
 
             default -> { return EMPTY; }
         }
@@ -32,6 +33,7 @@ public enum FieldContent {
         switch (content){
             case WHITE_OCCUPIED -> { return Color.WHITE; }
             case BLACK_OCCUPIED -> { return Color.BLACK; }
+            case CATHEDRAL -> { return Color.GREEN; }
             default -> { return Color.CYAN; }
         }
     }

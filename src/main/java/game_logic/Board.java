@@ -6,16 +6,16 @@ import java.util.List;
 
 public class Board {
     private static final int FIELD_COUNT = 100;
-    private static FieldContent[] content = new FieldContent[FIELD_COUNT];
+    private  FieldContent[] content = new FieldContent[FIELD_COUNT];
 
-    public boolean place(Move move) {
-        if(!isPlaceable(move)){
-            return false;
-        }
 
-        move.Place(this);
-
-        return true;
+    public void setContent(List<Point> points, Player player)
+    {
+        FieldContent playerContent = FieldContent.getOccupiedByPlayer(player);
+        points.forEach(p ->{
+            int index = getIndexByPoint(p);
+            this.content[index] = playerContent;
+        });
     }
 
     public boolean isPlaceable(Move move){
