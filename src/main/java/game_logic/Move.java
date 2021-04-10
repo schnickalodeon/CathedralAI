@@ -23,7 +23,11 @@ public class Move {
 
     public List<Point> getOccupyingPoints() {
 
-        List<Point> shape =  building.getShape(direction);
+        List<Point> shape =  new ArrayList<Point>();
+        building.getShape(direction).forEach(p ->
+        {
+            shape.add(new Point(p.x,p.y));
+        });
         shape.forEach(p ->
         {
             p.x += position.x;
