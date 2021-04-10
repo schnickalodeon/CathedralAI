@@ -20,17 +20,20 @@ public class Game {
     private LocalTime startTurn;
     private LocalTime endTurn;
 
-    public Game() {
+    private ArrayList<Move> moves = new ArrayList<>();
+
+    public Game(AI aiWhite, AI aiBlack) {
         this.board = new Board();
         this.moveCount = 0;
-        this.cathedral = new Player(PlayerColor.NEUTRAL,"Cathedral", board);
-        this.white = new Player(PlayerColor.WHITE,"Alice", board);
-        this.black = new Player(PlayerColor.BLACK,"Bob", board);
+        this.cathedral = new Player(PlayerColor.NEUTRAL,"Cathedral", board, aiBlack);
+        this.white = new Player(PlayerColor.WHITE,"Alice", board, aiWhite);
+        this.black = new Player(PlayerColor.BLACK,"Bob", board, aiBlack);
         this.isFinished = false;
     }
 
     public void Start(){
         createGameFile();
+        System.out.println("starting game...");
         while(!isFinished){
             Step();
         }

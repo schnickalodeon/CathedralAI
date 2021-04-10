@@ -37,12 +37,10 @@ public class RandomAI implements AI{
     }
 
     private static Point getRandomPoint(){
-        int x = random.nextInt(9) + 1;
-        int y = random.nextInt(9) + 1;
+        int x = random.nextInt(9);
+        int y = random.nextInt(9);
 
         return new Point(x,y);
     }
-
-
 
 }

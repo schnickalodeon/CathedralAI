@@ -1,5 +1,6 @@
 package game_logic;
 
+import ai.AI;
 import java.awt.*;
 import java.util.List;
 
@@ -8,22 +9,30 @@ public class Player {
     private final String name;
     private final List<Building> buildings;
     private final Board board;
+    private final AI ai;
 
     public PlayerColor getColor() {
         return color;
     }
     public List<Building> getBuildings() { return buildings; }
 
-    public Player(PlayerColor color, String name, Board board) {
+    public Player(PlayerColor color, String name, Board board, AI ai) {
         this.color = color;
         this.name = name;
         this.board = board;
+        this.ai = ai;
 
         buildings = Building.getAllBuildingsForPlayer(this);
     }
 
     public void removeBuildiung(Building building){
         buildings.remove(building);
+    }
+
+    public Move getNextMove()
+    {
+        Move move =ai.getMove(board,this);
+        return move;
     }
 
     public boolean makeMove(Move move)
