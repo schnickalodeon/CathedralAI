@@ -44,8 +44,8 @@ public abstract class Building {
         return buildings;
     }
 
-    public List<Point> getPoints(Point position) {
-        return shape.getPoints(position);
+    public List<Point> getPoints(Point position, Direction direction) {
+        return shape.getPoints(position, direction);
     }
 
 }
