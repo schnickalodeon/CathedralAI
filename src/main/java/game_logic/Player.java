@@ -1,4 +1,4 @@
-package game_logic.buildings;
+package game_logic;
 
 import game_logic.Building;
 import game_logic.PlayerColor;

@@ -1,7 +1,5 @@
 package game_logic;
 
-import game_logic.buildings.Player;
-
 import java.awt.*;
 
 public enum FieldContent {
@@ -23,24 +21,18 @@ public enum FieldContent {
     public static FieldContent getOccupiedByPlayer(Player player){
         PlayerColor color = player.getColor();
         switch (color){
-            case BLACK:
-                return BLACK_OCCUPIED;
-            case WHITE:
-                return WHITE_OCCUPIED;
+            case BLACK -> { return FieldContent.BLACK_OCCUPIED; }
+            case WHITE -> { return FieldContent.WHITE_OCCUPIED; }
 
-            default:
-                return EMPTY;
+            default -> { return EMPTY; }
         }
     }
 
     public static Color getColor(FieldContent content){
         switch (content){
-            case WHITE_OCCUPIED:
-                return Color.WHITE;
-            case BLACK_OCCUPIED:
-                return Color.BLACK;
-            default:
-                return Color.CYAN;
+            case WHITE_OCCUPIED -> { return Color.WHITE; }
+            case BLACK_OCCUPIED -> { return Color.BLACK; }
+            default -> { return Color.CYAN; }
         }
     }
 

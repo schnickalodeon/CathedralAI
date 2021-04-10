@@ -1,7 +1,6 @@
 package game_logic;
 
 import ai.AI;
-import game_logic.buildings.Player;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -62,7 +61,7 @@ public class Game {
             return cathedral;
 
         // White or Black
-        return (moves.stream().count() % 2 == 0) ? white : black;
+        return (moves.size() % 2 == 0) ? white : black;
     }
 
     private void appendGameFile(){
@@ -96,5 +95,4 @@ public class Game {
             System.out.println(ex.getMessage());
         }
     }
-
 }

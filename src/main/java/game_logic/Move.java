@@ -1,7 +1,5 @@
 package game_logic;
 
-import game_logic.buildings.Player;
-
 import java.awt.Point;
 import java.util.List;
 

@@ -4,7 +4,7 @@ import game_logic.Board;
 import game_logic.Building;
 import game_logic.Direction;
 import game_logic.Move;
-import game_logic.buildings.Player;
+import game_logic.Player;
 
 
 import java.awt.Point;
