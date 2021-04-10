@@ -6,13 +6,13 @@ public enum Turnable {
     Half(2),
     Full(4);
 
-    private final int turnable;
-    Turnable(int turnable) {
-        this.turnable = turnable;
+    private final int value;
+    Turnable(int value) {
+        this.value =value;
     }
 
-    public int getTurnable(){
-        return turnable;
+    public int getValue(){
+        return value;
     }
 
 }
