@@ -2,7 +2,7 @@ package game_logic;
 
 
 public enum Turnable {
-    Not(0),
+    Not(1),
     Half(2),
     Full(4);
 
