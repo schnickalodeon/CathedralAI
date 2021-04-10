@@ -4,6 +4,8 @@ import ai.AI;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 public class Game {
@@ -15,7 +17,8 @@ public class Game {
     private boolean isFinished;
     private AI ai;
     private int moveCount;
-    private ArrayList<Move> moves;
+    private LocalTime startTurn;
+    private LocalTime endTurn;
 
     public Game() {
         this.board = new Board();
@@ -35,13 +38,22 @@ public class Game {
     }
 
     public void Step(){
+        System.out.println("starting step...");
+        startTurn = LocalTime.now();
         Player player = getActivePlayer();
         boolean wasSuccessful = false;
         do {
-
-            Move move = ai.getMove(board,player);
+            endTurn = LocalTime.now();
+            if(startTurn.until(endTurn, ChronoUnit.SECONDS)>=15)
+            {
+                //TODO Implement buffer!
+                System.out.println("time OUT!");
+                break;
+            }
+            Move move = player.getNextMove();
             wasSuccessful = player.makeMove(move);
             if(wasSuccessful){
+                System.out.println("successful turn");
                 moves.add(move);
                 appendGameFile();
             }
