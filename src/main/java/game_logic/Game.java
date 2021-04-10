@@ -50,10 +50,14 @@ public class Game {
             if(startTurn.until(endTurn, ChronoUnit.SECONDS)>=15)
             {
                 //TODO Implement buffer!
-                System.out.println("time OUT!");
                 break;
             }
             Move move = player.getNextMove();
+            if (move == null)
+            {
+                System.out.println("failed to move!");
+                break;
+            }
             wasSuccessful = player.makeMove(move);
             if(wasSuccessful){
                 System.out.println("successful turn");
