@@ -14,27 +14,44 @@ public class Game {
     private final Player white;
     private final Player black;
     private boolean isFinished;
-    private int counter = 0;
+    private int turnNumber = 0;
 
     private ArrayList<Move> moves = new ArrayList<>();
 
+    public int getTurnNumber(){ return turnNumber; }
+
+    public Board getBoard(){ return board; }
+
     public Game(AI aiWhite, AI aiBlack) {
         this.board = new Board();
-        this.white = new PlayerWhite("Alice", board, aiWhite);
-        this.black = new PlayerBlack("Bob", board, aiBlack);
+        this.white = new PlayerWhite("Alice", this, aiWhite);
+        this.black = new PlayerBlack("Bob", this, aiBlack);
         this.isFinished = false;
     }
 
     public void start(){
         createGameFile();
         System.out.println("starting game...");
+
+        //First Move
+
+
         while(!isFinished){
-            step();
+            turn();
         }
+
+        printResult();
+
         closeGameFile();
     }
 
-    public void step(){
+    private void printResult() {
+        System.out.println("\nThe Game is over!!\n------------------------------");
+        System.out.println(white.getResult());
+        System.out.println(black.getResult());
+    }
+
+    public void turn(){
         LocalTime startTurn = LocalTime.now();
         Player player = getActivePlayer();
         boolean wasSuccessful = false;
@@ -58,25 +75,24 @@ public class Game {
             }
 
         } while(!wasSuccessful);
-        counter++;
+        turnNumber++;
         checkGameOver();
     }
 
     private void checkGameOver() {
-        if(white.getMoveList().isEmpty() && black.getMoveList().isEmpty()  && !moves.isEmpty())
+        if(white.getViableMoves().isEmpty() && black.getViableMoves().isEmpty()  && !moves.isEmpty())
         {
-            System.out.println("game is over");
             isFinished = true;
         }
     }
 
     private Player getActivePlayer() {
         // White or Black
-        return (counter % 2 == 0) ? white : black;
+        return (turnNumber % 2 == 0) ? white : black;
     }
 
     private void appendGameFile(){
-        String boardContent = board.getBoardHtml(counter);
+        String boardContent = board.getBoardHtml(turnNumber);
         try(FileWriter writer = new FileWriter(GAME_FILE_NAME,true)) {
             writer.append(boardContent);
         }

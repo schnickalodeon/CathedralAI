@@ -5,6 +5,7 @@ import game_logic.Building;
 import game_logic.Direction;
 import game_logic.Move;
 import game_logic.Player;
+import game_logic.buildings.Cathedral;
 
 
 import java.awt.Point;
@@ -24,6 +25,15 @@ public class RandomAI implements AI{
         Direction randomDirection = getRandomDirection();
 
         return new Move(randomPoint,randomBuilding,randomDirection,player);
+    }
+
+    @Override
+    public Move getFirstMove(Board board, Player player) {
+        Point randomPoint = getRandomPoint();
+        Direction randomDirection = getRandomDirection();
+        Building cathedral = new Cathedral();
+
+        return new Move(randomPoint,cathedral,randomDirection,player);
     }
 
     private static Direction getRandomDirection() {

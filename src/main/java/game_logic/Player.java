@@ -1,6 +1,8 @@
 package game_logic;
 
 import ai.AI;
+import game_logic.buildings.Cathedral;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,37 +11,51 @@ import java.util.stream.Collectors;
 public abstract class Player {
     protected final PlayerColor color;
     protected final String name;
-    protected final Board board;
+    protected final Game game;
     protected final AI ai;
     protected List<Building> buildings = new ArrayList<>();
-    protected List<Move> moveList = new ArrayList<>();
+    protected List<Move> viableMoves = new ArrayList<>();
     protected int timeOuts =0;
 
     public PlayerColor getColor() {
         return color;
     }
     public List<Building> getBuildings() { return buildings; }
+    private boolean isFirstTurn(){
+        return game.getTurnNumber() == 0 && color == PlayerColor.WHITE;
+    }
+
+    private Board getBoard(){
+        return game.getBoard();
+    }
 
 
-    protected Player(PlayerColor color, String name, Board board, AI ai) {
+    protected Player(PlayerColor color, String name, Game game, AI ai) {
         this.color = color;
         this.name = name;
-        this.board = board;
+        this.game = game;
         this.ai = ai;
+    }
+
+    public int countPoints(){
+        return buildings.stream().mapToInt(b -> b.points.size()).sum();
     }
 
     public void removeBuildiung(Building building){
         buildings.remove(building);
     }
 
+    public abstract Move getFirstMove() throws Exception;
+
     public Move getNextMove()
     {
-        moveList = generateValidMoves();
-        if (moveList.isEmpty())
+        Building building = (isFirstTurn()) ? new Cathedral(): null;
+        viableMoves = generateValidMoves(building);
+        if (viableMoves.isEmpty())
         {
             return null;
         }
-        return ai.getMove(board,this);
+        return ai.getMove(getBoard(),this);
     }
 
     public boolean makeMove(Move move)
@@ -49,7 +65,8 @@ public abstract class Player {
         }
 
         List<Point> occupiedBoardPositions = move.getOccupyingPoints();
-        board.setContent(occupiedBoardPositions,this);
+        FieldContent content = move.getBuilding().getContent();
+        getBoard().setContent(occupiedBoardPositions,content);
         removeBuildiung(move.getBuilding());
         return true;
     }
@@ -58,11 +75,11 @@ public abstract class Player {
         List<Point> points = move.getOccupyingPoints();
 
         for (Point point: points) {
-            if(board.isOutOfBounds(point))
+            if(getBoard().isOutOfBounds(point))
             {
                 return false;
             }
-            FieldContent fieldContent = board.getContent(point);
+            FieldContent fieldContent = getBoard().getContent(point);
             if(fieldContent != FieldContent.EMPTY){
                 return false;
             }
@@ -70,15 +87,26 @@ public abstract class Player {
         return true;
     }
 
+    //TODO Simplify and Refactor
     //for each x,y value, try every building in every rotation, check if its viable if so, add to a list.
-    public List<Move> generateValidMoves()
+    public List<Move> generateValidMoves(Building building)
     {
         List<Move> ml = new ArrayList<>();
         for (int x=0; x<10; x++)
         {
             for(int y=0; y<10; y++)
             {
-                List<Building> distinctBuildings = buildings.stream().distinct().collect(Collectors.toList());
+
+                //If moves for a specific Building should be generated, use only these.
+                List<Building> distinctBuildings = new ArrayList<>();
+                if(building == null){
+                    distinctBuildings.addAll(buildings.stream().distinct().collect(Collectors.toList()));
+                }
+                else
+                {
+                    distinctBuildings.add(building);
+                }
+
                 for(Building b: distinctBuildings)
                 {
                     for(int r=0; r < b.getTurnable(); r++)
@@ -97,12 +125,16 @@ public abstract class Player {
 
     @Override
     public String toString() {
-        return "Spieler " + name + "(" + color + ")";
+        return "Spieler " + name + " (" + color + ")";
     }
 
     public void incrementTimeOut() {
         ++timeOuts;
     }
     public int getTimeOuts(){return timeOuts;}
-    public List<Move> getMoveList(){return moveList;}
+    public List<Move> getViableMoves(){return viableMoves;}
+
+    public String getResult(){
+        return name + " (" + color + ") scored " + countPoints() + " Points";
+    }
 }

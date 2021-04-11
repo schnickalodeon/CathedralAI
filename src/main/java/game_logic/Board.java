@@ -16,12 +16,11 @@ public class Board {
     }
 
 
-    public void setContent(List<Point> points, Player player)
+    public void setContent(List<Point> points, FieldContent content)
     {
-        FieldContent playerContent = FieldContent.getOccupiedByPlayer(player);
         points.forEach(p ->{
             int index = getIndexByPoint(p);
-            this.content[index] = playerContent;
+            this.content[index] = content;
         });
     }
 
@@ -38,7 +37,6 @@ public class Board {
         return pageLength * p.y + p.x;
     }
 
-
     private int getIndexByCoordinates(int x, int y)
     {
         return getIndexByPoint(new Point(x,y));
@@ -50,7 +48,8 @@ public class Board {
         sb.append("<table style=");
         sb.append(tableStyle);
         sb.append("<h3>");
-        sb.append("Turn " + turn);
+        sb.append("Turn ");
+        sb.append(turn);
         sb.append("</h3>");
 
         int pageLength = (int) Math.sqrt(FIELD_COUNT);

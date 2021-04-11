@@ -13,6 +13,10 @@ public abstract class Building {
     protected PlayerColor playerColor;
     protected List<Point> points;
 
+    public FieldContent getContent() {
+        return FieldContent.getOccupiedByPlayer(playerColor);
+    }
+
     protected Building(String name, Turnable turnable, PlayerColor color){
         this.name = name;
         this.turnable = turnable;
@@ -51,6 +55,10 @@ public abstract class Building {
 
         buildings.add(new Academy(player));
         buildings.add(new Abbey(player));
+
+        if(player.getColor() == PlayerColor.WHITE){
+            buildings.add(new Cathedral());
+        }
 
         return buildings;
     }
@@ -106,4 +114,6 @@ public abstract class Building {
         result = prime * result + nameASCISum;
         return result;
     }
+
+
 }

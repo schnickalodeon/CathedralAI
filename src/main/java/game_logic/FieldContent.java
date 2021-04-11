@@ -18,8 +18,7 @@ public enum FieldContent {
         this.value = value;
     }
 
-    public static FieldContent getOccupiedByPlayer(Player player){
-        PlayerColor color = player.getColor();
+    public static FieldContent getOccupiedByPlayer(PlayerColor color){
         switch (color){
             case BLACK -> { return FieldContent.BLACK_OCCUPIED; }
             case WHITE -> { return FieldContent.WHITE_OCCUPIED; }
