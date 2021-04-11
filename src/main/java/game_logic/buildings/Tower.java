@@ -1,15 +1,15 @@
 package game_logic.buildings;
 
 import game_logic.Building;
-import game_logic.PlayerColor;
+import game_logic.Player;
 import game_logic.Turnable;
 
 import java.awt.*;
 
 public class Tower extends Building {
-    public Tower(PlayerColor playerColor) {
+    public Tower(Player player) {
         super("Tower"
-        , Turnable.Full, playerColor,
+        , Turnable.Full, player,
                         new Point(-1,-1),
                         new Point(0,-1),
                         new Point(0,0),

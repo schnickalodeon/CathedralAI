@@ -1,15 +1,15 @@
 package game_logic.buildings;
 
 import game_logic.Building;
-import game_logic.PlayerColor;
+import game_logic.Player;
 import game_logic.Turnable;
 
 import java.awt.*;
 
 public class Infirmary extends Building {
-    public Infirmary(PlayerColor playerColor) {
+    public Infirmary(Player player) {
         super("Infirmary",
-                Turnable.Not, playerColor,
+                Turnable.Not, player,
                         new Point(-1,0),
                         new Point(0,-1),
                         new Point(0,0),
