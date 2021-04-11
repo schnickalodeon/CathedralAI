@@ -4,6 +4,7 @@ import ai.AI;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Player {
     private final PlayerColor color;
@@ -35,12 +36,11 @@ public class Player {
     public Move getNextMove()
     {
         moveList = generateValidMoves();
-        if (moveList.size()==0)
+        if (moveList.isEmpty())
         {
             return null;
         }
-        Move move =ai.getMove(board,this);
-        return move;
+        return ai.getMove(board,this);
     }
 
     public boolean makeMove(Move move)
@@ -79,9 +79,10 @@ public class Player {
         {
             for(int y=0; y<10; y++)
             {
-                for(Building b: buildings)
+                List<Building> distinctBuildings = buildings.stream().distinct().collect(Collectors.toList());
+                for(Building b: distinctBuildings)
                 {
-                    for(int r=0; r<3; r++)
+                    for(int r=0; r < b.getTurnable(); r++)
                     {
                         Move m = new Move(new Point(x,y),b, Direction.values()[r],this);
                         if(isPlaceable(m))
