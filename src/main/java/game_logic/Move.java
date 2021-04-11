@@ -23,11 +23,9 @@ public class Move {
 
     public List<Point> getOccupyingPoints() {
 
-        List<Point> shape =  new ArrayList<Point>();
-        building.getShape(direction).forEach(p ->
-        {
-            shape.add(new Point(p.x,p.y));
-        });
+        List<Point> shape =  new ArrayList<>();
+        building.getShape(direction).forEach(p -> shape.add(new Point(p.x,p.y)));
+
         shape.forEach(p ->
         {
             p.x += position.x;
@@ -40,6 +38,6 @@ public class Move {
 
     public String toString()
     {
-        return "building: " + building.toString() + " " + player.toString() + " x:" + position.x + " y:" + position.y;
+        return player.toString() + "places " + building.toString() + " at (" + position.x + "|" + position.y+")";
     }
 }

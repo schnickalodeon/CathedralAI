@@ -15,40 +15,33 @@ public class Game {
     private final Player white;
     private final Player black;
     private boolean isFinished;
-    private AI ai;
-    private int moveCount;
-    private LocalTime startTurn;
-    private LocalTime endTurn;
     private int counter = 0;
 
     private ArrayList<Move> moves = new ArrayList<>();
 
     public Game(AI aiWhite, AI aiBlack) {
         this.board = new Board();
-        this.moveCount = 0;
         this.cathedral = new Player(PlayerColor.NEUTRAL,"Cathedral", board, aiBlack);
         this.white = new Player(PlayerColor.WHITE,"Alice", board, aiWhite);
         this.black = new Player(PlayerColor.BLACK,"Bob", board, aiBlack);
         this.isFinished = false;
     }
 
-    public void Start(){
+    public void start(){
         createGameFile();
         System.out.println("starting game...");
         while(!isFinished){
-            Step();
+            step();
         }
         closeGameFile();
     }
 
-    public void Step(){
-        System.out.println("starting step...");
-        startTurn = LocalTime.now();
+    public void step(){
+        LocalTime startTurn = LocalTime.now();
         Player player = getActivePlayer();
         boolean wasSuccessful = false;
         do {
-            endTurn = LocalTime.now();
-            if(startTurn.until(endTurn, ChronoUnit.SECONDS)>=15)
+            if(startTurn.until(LocalTime.now(), ChronoUnit.SECONDS)>=15)
             {
                 //TODO Implement buffer!
                 break;
@@ -61,7 +54,7 @@ public class Game {
             }
             wasSuccessful = player.makeMove(move);
             if(wasSuccessful){
-                System.out.println("successful turn");
+                System.out.println(move);
                 moves.add(move);
                 appendGameFile();
             }
@@ -72,7 +65,7 @@ public class Game {
     }
 
     private void checkGameOver() {
-        if(white.getMoveList().size() == 0 && black.getMoveList().size() == 0 && moves.size() > 1)
+        if(white.getMoveList().isEmpty() && black.getMoveList().isEmpty()  && !moves.isEmpty())
         {
             System.out.println("game is over");
             isFinished = true;
@@ -89,9 +82,8 @@ public class Game {
     }
 
     private void appendGameFile(){
-        String boardContent = board.getBoardHtml();
-        try {
-            FileWriter writer = new FileWriter(GAME_FILE_NAME,true);
+        String boardContent = board.getBoardHtml(counter);
+        try(FileWriter writer = new FileWriter(GAME_FILE_NAME,true)) {
             writer.append(boardContent);
         }
         catch (IOException ex){
@@ -100,9 +92,10 @@ public class Game {
     }
 
     private void createGameFile(){
-        try {
-            FileWriter writer = new FileWriter(GAME_FILE_NAME,true);
+
+        try(FileWriter writer = new FileWriter(GAME_FILE_NAME,true)) {
             writer.append("<html>");
+            writer.append("<body style=\"background-color:grey;\">");
         }
         catch (IOException ex){
             System.out.println(ex.getMessage());
@@ -110,13 +103,14 @@ public class Game {
     }
 
     private void closeGameFile(){
-        try {
-            FileWriter writer = new FileWriter(GAME_FILE_NAME,true);
+        try(FileWriter writer = new FileWriter(GAME_FILE_NAME,true)) {
+            writer.append("</body>");
             writer.append("</html>");
-            writer.close();
+
         }
         catch (IOException ex){
             System.out.println(ex.getMessage());
         }
+
     }
 }
