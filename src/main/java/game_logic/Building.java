@@ -16,7 +16,6 @@ public abstract class Building {
     public FieldContent getContent() {
         return FieldContent.getOccupiedByPlayer(playerColor);
     }
-
     protected Building(String name, Turnable turnable, PlayerColor color){
         this.name = name;
         this.turnable = turnable;
@@ -114,6 +113,4 @@ public abstract class Building {
         result = prime * result + nameASCISum;
         return result;
     }
-
-
 }
