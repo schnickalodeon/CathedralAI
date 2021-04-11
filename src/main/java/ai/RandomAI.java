@@ -4,7 +4,7 @@ import game_logic.Board;
 import game_logic.Building;
 import game_logic.Direction;
 import game_logic.Move;
-import game_logic.buildings.Player;
+import game_logic.Player;
 
 
 import java.awt.Point;
@@ -37,12 +37,10 @@ public class RandomAI implements AI{
     }
 
     private static Point getRandomPoint(){
-        int x = random.nextInt(9) + 1;
-        int y = random.nextInt(9) + 1;
+        int x = random.nextInt(9);
+        int y = random.nextInt(9);
 
         return new Point(x,y);
     }
-
-
 
 }

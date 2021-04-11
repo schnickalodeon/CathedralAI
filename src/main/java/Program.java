@@ -1,5 +1,12 @@
+import ai.CleverRandomAI;
+import ai.RandomAI;
+import game_logic.Game;
+
 public class Program {
     public static void main(String[] args) {
-        System.out.println("Cathedral AI - Team Tango [Michel Siegert & Nick Loewecke]");
+        RandomAI ai =  new RandomAI();
+        CleverRandomAI ki = new CleverRandomAI();
+        Game game = new Game(ki, ki);
+        game.Start();
     }
 }

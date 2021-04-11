@@ -1,10 +1,11 @@
 package game_logic;
 
 import ai.AI;
-import game_logic.buildings.Player;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 public class Game {
@@ -16,19 +17,24 @@ public class Game {
     private boolean isFinished;
     private AI ai;
     private int moveCount;
-    private ArrayList<Move> moves;
+    private LocalTime startTurn;
+    private LocalTime endTurn;
+    private int counter = 0;
 
-    public Game() {
+    private ArrayList<Move> moves = new ArrayList<>();
+
+    public Game(AI aiWhite, AI aiBlack) {
         this.board = new Board();
         this.moveCount = 0;
-        this.cathedral = new Player(PlayerColor.NEUTRAL,"Cathedral");
-        this.white = new Player(PlayerColor.WHITE,"Alice");
-        this.black = new Player(PlayerColor.BLACK,"Bob");
+        this.cathedral = new Player(PlayerColor.NEUTRAL,"Cathedral", board, aiBlack);
+        this.white = new Player(PlayerColor.WHITE,"Alice", board, aiWhite);
+        this.black = new Player(PlayerColor.BLACK,"Bob", board, aiBlack);
         this.isFinished = false;
     }
 
     public void Start(){
         createGameFile();
+        System.out.println("starting game...");
         while(!isFinished){
             Step();
         }
@@ -36,24 +42,41 @@ public class Game {
     }
 
     public void Step(){
+        System.out.println("starting step...");
+        startTurn = LocalTime.now();
         Player player = getActivePlayer();
         boolean wasSuccessful = false;
         do {
-
-            Move move = ai.getMove(board,player);
-            wasSuccessful = board.place(move);
-
+            endTurn = LocalTime.now();
+            if(startTurn.until(endTurn, ChronoUnit.SECONDS)>=15)
+            {
+                //TODO Implement buffer!
+                break;
+            }
+            Move move = player.getNextMove();
+            if (move == null)
+            {
+                System.out.println("failed to move!");
+                break;
+            }
+            wasSuccessful = player.makeMove(move);
             if(wasSuccessful){
+                System.out.println("successful turn");
                 moves.add(move);
                 appendGameFile();
             }
 
         } while(!wasSuccessful);
+        counter++;
         checkGameOver();
     }
 
     private void checkGameOver() {
-
+        if(white.getMoveList().size() == 0 && black.getMoveList().size() == 0 && moves.size() > 1)
+        {
+            System.out.println("game is over");
+            isFinished = true;
+        }
     }
 
     private Player getActivePlayer() {
@@ -62,7 +85,7 @@ public class Game {
             return cathedral;
 
         // White or Black
-        return (moves.stream().count() % 2 == 0) ? white : black;
+        return (counter % 2 == 0) ? white : black;
     }
 
     private void appendGameFile(){
@@ -96,5 +119,4 @@ public class Game {
             System.out.println(ex.getMessage());
         }
     }
-
 }

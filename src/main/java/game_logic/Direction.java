@@ -11,5 +11,6 @@ public enum Direction {
     Direction(int number) {
         this.number = number;
     }
+    public int getNumber(){return number;}
 
 }
