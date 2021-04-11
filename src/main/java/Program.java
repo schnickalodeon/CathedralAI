@@ -7,6 +7,6 @@ public class Program {
         RandomAI ai =  new RandomAI();
         CleverRandomAI ki = new CleverRandomAI();
         Game game = new Game(ki, ki);
-        game.Start();
+        game.start();
     }
 }
