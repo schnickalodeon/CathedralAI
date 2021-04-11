@@ -17,6 +17,8 @@ public abstract class Player {
     protected List<Move> viableMoves = new ArrayList<>();
     protected int timeOuts =0;
 
+    private int bufferInSeconds;
+
     public PlayerColor getColor() {
         return color;
     }
@@ -29,12 +31,20 @@ public abstract class Player {
         return game.getBoard();
     }
 
+    public boolean hasBuffer() {
+        return bufferInSeconds > 0;
+    }
+
+    public int getBuffer() {
+        return bufferInSeconds;
+    }
 
     protected Player(PlayerColor color, String name, Game game, AI ai) {
         this.color = color;
         this.name = name;
         this.game = game;
         this.ai = ai;
+        this.bufferInSeconds = 2; //120;
     }
 
     public int countPoints(){
@@ -137,4 +147,10 @@ public abstract class Player {
     public String getResult(){
         return name + " (" + color + ") scored " + countPoints() + " Points";
     }
+
+    public void reduceBuffer(long bufferUsed) {
+        bufferInSeconds -= bufferUsed;
+    }
+
+
 }

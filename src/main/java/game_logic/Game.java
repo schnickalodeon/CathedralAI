@@ -9,6 +9,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 public class Game {
+    private static final int TURN_MAX_TIME = 3;
     private static final String GAME_FILE_NAME = "Game.html";
     private final Board board;
     private final Player white;
@@ -33,9 +34,6 @@ public class Game {
         createGameFile();
         System.out.println("starting game...");
 
-        //First Move
-
-
         while(!isFinished){
             turn();
         }
@@ -54,14 +52,23 @@ public class Game {
     public void turn(){
         LocalTime startTurn = LocalTime.now();
         Player player = getActivePlayer();
+        LocalTime bufferStart = null;
         boolean wasSuccessful = false;
         do {
-            if(startTurn.until(LocalTime.now(), ChronoUnit.SECONDS)>=15)
-            {
-                //TODO Implement buffer!
-                break;
-            }
+
             Move move = player.getNextMove();
+            bufferStart = null;
+            long timeElapsed = startTurn.until(LocalTime.now(), ChronoUnit.SECONDS);
+            if(timeElapsed >= TURN_MAX_TIME)
+            {
+                System.out.println(player.toString() + ": " + player.getBuffer());
+                if(!player.hasBuffer()){
+                    System.out.println("Jüm häpt kien tiet mehr");
+                    break;
+                }
+                bufferStart = LocalTime.now();
+            }
+
             if (move == null)
             {
                 System.out.println("failed to move!");
@@ -70,13 +77,22 @@ public class Game {
             wasSuccessful = player.makeMove(move);
             if(wasSuccessful){
                 System.out.println(move);
+
+                if(bufferStart != null){
+                    long bufferUsed = bufferStart.until(LocalTime.now(),ChronoUnit.SECONDS);
+                    player.reduceBuffer(bufferUsed);
+                }
+
                 moves.add(move);
                 appendGameFile();
             }
-
         } while(!wasSuccessful);
         turnNumber++;
         checkGameOver();
+
+
+
+
     }
 
     private void checkGameOver() {

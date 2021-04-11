@@ -16,6 +16,11 @@ public class CleverRandomAI implements AI{
     @Override
     public Move getMove(Board board, Player player) {
         List<Move> moveList = player.getViableMoves();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return moveList.get(random.nextInt(moveList.size()));
     }
 
