@@ -6,11 +6,12 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class Building {
-    private final String name;
+    protected final String name;
     private final Turnable turnable;
-    private final PlayerColor playerColor;
+    protected final PlayerColor playerColor;
     private final List<Point> points;
 
 
@@ -42,6 +43,7 @@ public abstract class Building {
         buildings.add(new Infirmary(color));
         buildings.add(new Castle(color));
         buildings.add(new Tower(color));
+        buildings.add(new Academy(color));
 
         return buildings;
     }
@@ -49,6 +51,10 @@ public abstract class Building {
     public List<Point> getShape(Direction direction) {
         List<Point> rotated = turn(direction);
         return rotated;
+    }
+
+    public int getTurnable() {
+        return turnable.getValue();
     }
 
     public List<Point> turn(Direction direction)
@@ -68,5 +74,30 @@ public abstract class Building {
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Building building = (Building) o;
+
+        return building.name.equals(this.name) && building.playerColor.equals(this.playerColor);
+    }
+
+    @Override
+    public int hashCode() {
+
+        int nameASCISum = 0;
+
+        for (char c: name.toCharArray())
+        {
+            nameASCISum += Character.getNumericValue(c);
+        }
+
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + nameASCISum;
+        return result;
     }
 }
