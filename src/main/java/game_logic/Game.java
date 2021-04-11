@@ -11,7 +11,6 @@ import java.util.ArrayList;
 public class Game {
     private static final String GAME_FILE_NAME = "Game.html";
     private final Board board;
-    private final Player cathedral;
     private final Player white;
     private final Player black;
     private boolean isFinished;
@@ -21,9 +20,8 @@ public class Game {
 
     public Game(AI aiWhite, AI aiBlack) {
         this.board = new Board();
-        this.cathedral = new Player(PlayerColor.NEUTRAL,"Cathedral", board, aiBlack);
-        this.white = new Player(PlayerColor.WHITE,"Alice", board, aiWhite);
-        this.black = new Player(PlayerColor.BLACK,"Bob", board, aiBlack);
+        this.white = new PlayerWhite("Alice", board, aiWhite);
+        this.black = new PlayerBlack("Bob", board, aiBlack);
         this.isFinished = false;
     }
 
@@ -73,10 +71,6 @@ public class Game {
     }
 
     private Player getActivePlayer() {
-        //First Move --> Cathedral
-        if(moves.isEmpty())
-            return cathedral;
-
         // White or Black
         return (counter % 2 == 0) ? white : black;
     }

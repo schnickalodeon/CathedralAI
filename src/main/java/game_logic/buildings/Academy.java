@@ -6,11 +6,12 @@ import game_logic.PlayerColor;
 import game_logic.Turnable;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Academy extends Building {
     public Academy(Player player) {
         super("Academy", Turnable.Full, player);
-
+        this.points = new ArrayList<>();
         //Black
         if(player.getColor() == PlayerColor.BLACK){
             this.addPointToShape(-1,0);

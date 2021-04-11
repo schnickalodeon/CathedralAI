@@ -6,10 +6,12 @@ import game_logic.PlayerColor;
 import game_logic.Turnable;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Abbey extends Building {
     public Abbey(Player player) {
         super("Abbey", Turnable.Half, player);
+        this.points = new ArrayList<>();
 
         if(player.getColor() == PlayerColor.BLACK){
             this.addPointToShape(-1,0);
