@@ -6,27 +6,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Player {
-    private final PlayerColor color;
-    private final String name;
-    private final List<Building> buildings;
-    private final Board board;
-    private final AI ai;
-    private List<Move> moveList = new ArrayList<>();
-    private int timeOuts =0;
+public abstract class Player {
+    protected final PlayerColor color;
+    protected final String name;
+    protected final Board board;
+    protected final AI ai;
+    protected List<Building> buildings = new ArrayList<>();
+    protected List<Move> moveList = new ArrayList<>();
+    protected int timeOuts =0;
 
     public PlayerColor getColor() {
         return color;
     }
     public List<Building> getBuildings() { return buildings; }
 
-    public Player(PlayerColor color, String name, Board board, AI ai) {
+
+    protected Player(PlayerColor color, String name, Board board, AI ai) {
         this.color = color;
         this.name = name;
         this.board = board;
         this.ai = ai;
-
-        buildings = Building.getAllBuildingsForPlayer(this);
     }
 
     public void removeBuildiung(Building building){
