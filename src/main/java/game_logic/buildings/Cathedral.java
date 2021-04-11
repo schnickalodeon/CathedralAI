@@ -8,12 +8,12 @@ import java.awt.*;
 
 public class Cathedral extends Building {
     public Cathedral() {
-        super("Cathedral", Turnable.Full, PlayerColor.NEUTRAL,
-                new Point(-1,0),
-                new Point(0,-1),
-                new Point(0,0),
-                new Point(0,1),
-                new Point(0,2),
-                new Point(1,0));
+        super("Cathedral",Turnable.Full,PlayerColor.NEUTRAL);
+        this.addPointToShape(-1,0);
+        this.addPointToShape(0,-1);
+        this.addPointToShape(0,0);
+        this.addPointToShape(0,1);
+        this.addPointToShape(0,2);
+        this.addPointToShape(1,0);
     }
 }

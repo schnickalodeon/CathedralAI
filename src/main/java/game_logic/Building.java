@@ -6,51 +6,57 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public abstract class Building {
-    protected final String name;
-    private final Turnable turnable;
-    protected final PlayerColor playerColor;
-    private final List<Point> points;
+    protected String name;
+    protected Turnable turnable;
+    protected PlayerColor playerColor;
+    protected List<Point> points;
 
+    protected Building(String name, Turnable turnable, PlayerColor color){
+        this.name = name;
+        this.turnable = turnable;
+        this.playerColor = color;
+    }
 
-    protected Building(String name, Turnable turnable, PlayerColor playerColor, Point...point) {
+    protected Building(String name, Turnable turnable, Player player, Point...point) {
         this.name = name;
         points = Arrays.asList(point);
         this.turnable = turnable;
-        this.playerColor = playerColor;
+        this.playerColor = player.getColor();
+    }
+
+    protected void addPointToShape(int x, int y){
+        points.add(new Point(x,y));
     }
 
     public static List<Building> getAllBuildingsForPlayer(Player player) {
 
-        PlayerColor color = player.getColor();
-
         List<Building> buildings = new ArrayList<>();
-        buildings.add(new Tavern(color));
-        buildings.add(new Tavern(color));
+        buildings.add(new Tavern(player));
+        buildings.add(new Tavern(player));
 
-        buildings.add(new Stable(color));
-        buildings.add(new Stable(color));
+        buildings.add(new Stable(player));
+        buildings.add(new Stable(player));
 
-        buildings.add(new Inn(color));
-        buildings.add(new Inn(color));
+        buildings.add(new Inn(player));
+        buildings.add(new Inn(player));
 
-        buildings.add(new Bridge(color));
-        buildings.add(new Manor(color));
-        buildings.add(new Square(color));
-        buildings.add(new Abbey(color));
-        buildings.add(new Infirmary(color));
-        buildings.add(new Castle(color));
-        buildings.add(new Tower(color));
-        buildings.add(new Academy(color));
+        buildings.add(new Bridge(player));
+        buildings.add(new Manor(player));
+        buildings.add(new Square(player));
+        buildings.add(new Infirmary(player));
+        buildings.add(new Castle(player));
+        buildings.add(new Tower(player));
+
+        buildings.add(new Academy(player));
+        buildings.add(new Abbey(player));
 
         return buildings;
     }
 
     public List<Point> getShape(Direction direction) {
-        List<Point> rotated = turn(direction);
-        return rotated;
+       return turn(direction);
     }
 
     public int getTurnable() {
