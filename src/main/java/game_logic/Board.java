@@ -44,9 +44,14 @@ public class Board {
         return getIndexByPoint(new Point(x,y));
     }
 
-    public String getBoardHtml(){
+    public String getBoardHtml(int turn){
         StringBuilder sb = new StringBuilder();
-        sb.append("<table>");
+        String tableStyle = "\"min-width:300px; min-height:300px; border: 1px solid black; margin-bottom:50px;\">";
+        sb.append("<table style=");
+        sb.append(tableStyle);
+        sb.append("<h3>");
+        sb.append("Turn " + turn);
+        sb.append("</h3>");
 
         int pageLength = (int) Math.sqrt(FIELD_COUNT);
 
@@ -56,10 +61,11 @@ public class Board {
             for (int col = 0; col < pageLength; col++ ){
                 index = getIndexByCoordinates(col,row);
                 Color color = FieldContent.getColor(content[index]);
-                String style = "\"style=background-color:" + color.toString() + ";\"";
+                String hexColor = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(),color.getBlue());
+                String style = "style=\"background-color:" + hexColor + ";\">";
                 sb.append("<td ");
                 sb.append(style);
-                sb.append("></td>");
+                sb.append("</td>");
             }
             sb.append("</tr>");
         }
