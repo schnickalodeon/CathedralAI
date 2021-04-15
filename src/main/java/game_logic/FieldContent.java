@@ -26,12 +26,15 @@ public enum FieldContent {
 
             default -> { return EMPTY; }
         }
+
     }
 
     public static Color getColor(FieldContent content){
         switch (content){
             case WHITE_OCCUPIED -> { return Color.WHITE; }
+            case WHITE_TERRITORY -> {return Color.lightGray;}
             case BLACK_OCCUPIED -> { return Color.BLACK; }
+            case BLACK_TERRITORY -> {return Color.darkGray;}
             case CATHEDRAL -> { return Color.GREEN; }
             default -> { return Color.CYAN; }
         }

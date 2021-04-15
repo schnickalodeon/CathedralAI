@@ -77,7 +77,7 @@ public class Game {
             wasSuccessful = player.makeMove(move);
             if(wasSuccessful){
                 System.out.println(move);
-
+                board.checkArea(move);
                 if(bufferStart != null){
                     long bufferUsed = bufferStart.until(LocalTime.now(),ChronoUnit.SECONDS);
                     player.reduceBuffer(bufferUsed);
@@ -138,5 +138,7 @@ public class Game {
             System.out.println(ex.getMessage());
         }
 
+
+        //TODO processing frontend for manual play
     }
 }

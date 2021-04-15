@@ -78,6 +78,7 @@ public abstract class Player {
         FieldContent content = move.getBuilding().getContent();
         getBoard().setContent(occupiedBoardPositions,content);
         removeBuildiung(move.getBuilding());
+
         return true;
     }
 
