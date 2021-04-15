@@ -97,7 +97,6 @@ public abstract class Player {
         return true;
     }
 
-    //TODO Simplify and Refactor
     //for each x,y value, try every building in every rotation, check if its viable if so, add to a list.
     public List<Move> generateValidMoves(Building building)
     {
@@ -106,18 +105,8 @@ public abstract class Player {
         {
             for(int y=0; y<10; y++)
             {
-
                 //If moves for a specific Building should be generated, use only these.
-                List<Building> distinctBuildings = new ArrayList<>();
-                if(building == null){
-                    distinctBuildings.addAll(buildings.stream().distinct().collect(Collectors.toList()));
-                }
-                else
-                {
-                    distinctBuildings.add(building);
-                }
-
-                for(Building b: distinctBuildings)
+                for(Building b: getPlaceableBuildings(building))
                 {
                     for(int r=0; r < b.getTurnable(); r++)
                     {
@@ -131,6 +120,20 @@ public abstract class Player {
             }
         }
         return ml;
+    }
+
+    private List<Building> getPlaceableBuildings(Building building) {
+
+        if(building == null){
+           return getBuildings().stream().distinct().collect(Collectors.toList());
+        }
+        else
+        {
+            List<Building> list = new ArrayList<>();
+            list.add(building);
+            return list;
+        }
+
     }
 
     @Override
