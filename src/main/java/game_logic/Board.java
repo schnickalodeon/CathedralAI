@@ -49,7 +49,7 @@ public class Board {
         sb.append(tableStyle);
         sb.append("<h3>");
         sb.append("Turn ");
-        sb.append(turn);
+        sb.append(turn+1);
         sb.append("</h3>");
 
         int pageLength = (int) Math.sqrt(FIELD_COUNT);
