@@ -26,7 +26,6 @@ public enum FieldContent {
 
             default -> { return EMPTY; }
         }
-
     }
 
     public static Color getColor(FieldContent content){
@@ -39,6 +38,5 @@ public enum FieldContent {
             default -> { return Color.CYAN; }
         }
     }
-
 
 }
