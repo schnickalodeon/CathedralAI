@@ -28,6 +28,12 @@ public class Board
         });
     }
 
+    public void setContent(Point point, FieldContent content)
+    {
+            int index = getIndexByPoint(point);
+            this.content[index] = content;
+    }
+
     public FieldContent getContent(Point p) {
         int index = getIndexByPoint(p);
         return content[index];
@@ -98,13 +104,16 @@ public class Board
 
     //check if the board has any area that needs to be owned by one of the players.
     //move may not be necessary
-    public void checkArea(Move move)
+    public void checkArea(PlayerColor color)
     {
         int emptyFieldCount;
         int reachbleFieldCount;
         ArrayList<Point> emptyFields = getEmptyPoints();
         ArrayList<Point> emptyFieldsRecursive = new ArrayList<>();
         emptyFieldCount = emptyFields.size();
+        ArrayList<Integer> numberPointsInArea =  new ArrayList<>();
+        ArrayList<Point> pointsToAccess = new ArrayList<>();
+
         for (Point p: emptyFields)
         {
             //man merke sich immer den höchsten wert erreichbarer felder für jeden punkt
@@ -112,7 +121,7 @@ public class Board
             //benachbarte felder rekursiv ebenfalls "einnehmen" bis grenzen erreicht werden.
             //empty fields muss verkleinert werden um die anzahl eingenommener punkte
             emptyFieldsRecursive.clear();
-            reachbleFieldCount = getReachableFields(move.getPlayer().getColor(),p, emptyFieldsRecursive, 0);
+            reachbleFieldCount = getReachableFields(color,p, emptyFieldsRecursive, 0);
             if(reachbleFieldCount == emptyFieldCount)
             {
                 return;
@@ -120,15 +129,95 @@ public class Board
             //punkte müssen eingenommen werden
             else
             {
-                System.out.println(reachbleFieldCount+" "+emptyFieldCount);
+                for (Point point: emptyFieldsRecursive)
+                {
+                    if(pointsToAccess.size() > 0) {
+                        if (point.x == pointsToAccess.get(0).x && point.y == pointsToAccess.get(0).y)
+                        {
+                            break;
+                        }
+                        if (numberPointsInArea.get(0) != reachbleFieldCount)
+                        {
+                            pointsToAccess.add(point);
+                            numberPointsInArea.add(reachbleFieldCount);
+                        }
+                    }
+                    else
+                    {
+                        pointsToAccess.add(point);
+                        numberPointsInArea.add(reachbleFieldCount);
+                    }
+                    if (pointsToAccess.size() ==2)
+                    {
+                        ArrayList<Point> pList = new ArrayList<>();
+                        if(numberPointsInArea.get(0) > numberPointsInArea.get(1))
+                        {
+                            conquerArea(color, pointsToAccess.get(1),pList);
+                            emptyFieldCount -= numberPointsInArea.get(1);
+                            numberPointsInArea.remove(1);
+                            pointsToAccess.remove(1);
+                        }
+                        else
+                        {
+                            conquerArea(color, pointsToAccess.get(0),pList);
+                            emptyFieldCount -= numberPointsInArea.get(0);
+                            numberPointsInArea.remove(0);
+                            pointsToAccess.remove(0);
+                        }
+                        break;
+                    }
+                }
             }
+        }
+    }
+
+    private void conquerArea(PlayerColor color, Point p, List<Point> allPoints)
+    {
+        //wenn das feld feld nicht dem spieler gehört, dann:
+        if(isOutOfBounds(p))
+        {
+            return;
+        }
+        for (Point p1: allPoints) {
+            if (p1.x == p.x && p1.y == p.y) {
+                return;
+            }
+        }
+
+        allPoints.add(p);
+        if(getContent(p) == FieldContent.getOccupiedByPlayer(color))
+        {
+            return;
+        }
+        /*TODO wenn aus der move liste 2 moves in diesem bereich gemacht wurden, (was mit koordinatenabfrage gut möglich ist) mache alle felder,
+        die NICHT der spielerfarbe entsprechen eingenommen.
+        remove die Figur vom Board, und gebe sie dem Spieler wieder. */
+        if(true)
+        {
+            if (color == PlayerColor.BLACK)
+            {
+                setContent(p, FieldContent.BLACK_TERRITORY);
+            }
+            else
+            {
+                setContent(p, FieldContent.WHITE_TERRITORY);
+            }
+            conquerArea(color, new Point (p.x-1,p.y-1),allPoints);
+            conquerArea(color, new Point (p.x,p.y-1),allPoints);
+            conquerArea(color, new Point (p.x+1,p.y-1),allPoints);
+            conquerArea(color, new Point (p.x-1,p.y),allPoints);
+            conquerArea(color, new Point (p.x+1,p.y),allPoints);
+            conquerArea(color, new Point (p.x-1,p.y+1),allPoints);
+            conquerArea(color, new Point (p.x,p.y+1),allPoints);
+            conquerArea(color, new Point (p.x+1,p.y+1),allPoints);
         }
     }
 
     private int getReachableFields(PlayerColor color, Point p, List<Point> allPoints, int counter)
     {
         //wenn das feld feld nicht dem spieler gehört, dann:
-        if(isOutOfBounds(p)) {
+        if(isOutOfBounds(p))
+        {
             return counter;
         }
         
@@ -168,7 +257,7 @@ public class Board
 
     //iterate through every field and check all empty fields. this would work better if things would be Colored.
     private ArrayList<Point> getEmptyPoints() {
-        ArrayList <Point> emptyPoints = new ArrayList<Point>();
+        ArrayList <Point> emptyPoints = new ArrayList<>();
         for (int i=0; i < FIELD_COUNT; i++)
         {
             if(getContent(i)== FieldContent.EMPTY)
