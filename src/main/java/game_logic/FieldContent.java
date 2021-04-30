@@ -23,7 +23,8 @@ public enum FieldContent {
             case BLACK -> { return FieldContent.BLACK_OCCUPIED; }
             case WHITE -> { return FieldContent.WHITE_OCCUPIED; }
             case NEUTRAL -> { return FieldContent.CATHEDRAL; }
-
+            case LIGHTGRAY -> {return WHITE_TERRITORY;}
+            case DARKGRAY -> {return FieldContent.BLACK_TERRITORY;}
             default -> { return EMPTY; }
         }
     }
