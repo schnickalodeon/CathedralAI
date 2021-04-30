@@ -103,7 +103,7 @@ public class Board
         int emptyFieldCount;
         int reachbleFieldCount;
         ArrayList<Point> emptyFields = getEmptyPoints();
-        ArrayList<ArrayList<Point>> emptyFieldsRecursive;
+        ArrayList<Point> emptyFieldsRecursive = new ArrayList<>();
         emptyFieldCount = emptyFields.size();
         for (Point p: emptyFields)
         {
@@ -111,7 +111,8 @@ public class Board
             //wenn wenn erreichbare felder > höchster wert  && > 0 -> färbe ein.
             //benachbarte felder rekursiv ebenfalls "einnehmen" bis grenzen erreicht werden.
             //empty fields muss verkleinert werden um die anzahl eingenommener punkte
-            emptyFieldsRecursive = getReachableFields(move.getPlayer().getColor(),p);
+            emptyFieldsRecursive.clear();
+            reachbleFieldCount = getReachableFields(move.getPlayer().getColor(),p, emptyFieldsRecursive, 0);
             if(reachbleFieldCount == emptyFieldCount)
             {
                 return;
@@ -119,20 +120,49 @@ public class Board
             //punkte müssen eingenommen werden
             else
             {
-
+                System.out.println(reachbleFieldCount+" "+emptyFieldCount);
             }
         }
     }
 
-    private int getReachableFields(PlayerColor color, Point p)
+    private int getReachableFields(PlayerColor color, Point p, List<Point> allPoints, int counter)
     {
         //wenn das feld feld nicht dem spieler gehört, dann:
-        if(isOutOfBounds(p))
-        {
-            return 0;
+        if(isOutOfBounds(p)) {
+            return counter;
         }
-        int numFields = 0;
-        return 0;
+        
+        //es ist ein valider punkt, überprüfe, ob der punkt bereits besucht wurde.
+        for (Point p1: allPoints)
+        {
+            if (p1.x == p.x && p1.y == p.y)
+            {
+                return counter;
+            }
+        }
+        allPoints.add(p);
+        
+        //ist das feld von dem Spieler occupied.
+        if(getContent(p) == FieldContent.getOccupiedByPlayer(color))
+        {
+            return counter;
+        }
+        
+        if(getContent(p)== FieldContent.EMPTY)
+        {
+            counter++;
+        }
+        
+        //TODO endrekursiv schreiben für performance
+        counter = getReachableFields(color, new Point (p.x-1,p.y-1),allPoints,counter);
+        counter = getReachableFields(color, new Point (p.x,p.y-1),allPoints,counter);
+        counter = getReachableFields(color, new Point (p.x+1,p.y-1),allPoints,counter);
+        counter = getReachableFields(color, new Point (p.x-1,p.y),allPoints,counter);
+        counter = getReachableFields(color, new Point (p.x+1,p.y),allPoints,counter);
+        counter = getReachableFields(color, new Point (p.x-1,p.y+1),allPoints,counter);
+        counter = getReachableFields(color, new Point (p.x,p.y+1),allPoints,counter);
+        counter = getReachableFields(color, new Point (p.x+1,p.y+1),allPoints,counter);
+        return counter;
     }
 
 
