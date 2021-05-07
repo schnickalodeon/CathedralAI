@@ -32,6 +32,7 @@ public abstract class Building {
     protected void addPointToShape(int x, int y){
         points.add(new Point(x,y));
     }
+    protected int getNumPointsOfShape(){return points.size();}
 
     public static List<Building> getAllBuildingsForPlayer(Player player) {
 
