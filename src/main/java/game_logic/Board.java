@@ -108,12 +108,17 @@ public class Board
     public void checkArea(PlayerColor color)
     {
         int emptyFieldCount;
-        int reachbleFieldCount;
+        int reachbleEmptyFieldCount;
+
+        //iterativ durch leere felder
         ArrayList<Point> emptyFields = getEmptyPoints();
-        ArrayList<Point> emptyFieldsRecursive = new ArrayList<>();
+        ArrayList<Point> reachableFromPoint = new ArrayList<>();
         emptyFieldCount = emptyFields.size();
-        ArrayList<Integer> numberPointsInArea =  new ArrayList<>();
-        ArrayList<Point> pointsToAccess = new ArrayList<>();
+
+
+        //todo Datenstruktur area erstellen
+        ArrayList<Integer> areaSizes =  new ArrayList<>();
+        ArrayList<Point>  areaReferencePoints = new ArrayList<>();
 
         for (Point p: emptyFields)
         {
@@ -121,56 +126,65 @@ public class Board
             //wenn wenn erreichbare felder > höchster wert  && > 0 -> färbe ein.
             //benachbarte felder rekursiv ebenfalls "einnehmen" bis grenzen erreicht werden.
             //empty fields muss verkleinert werden um die anzahl eingenommener punkte
-            if (emptyFieldsRecursive.contains(p))continue;
+            if (reachableFromPoint.contains(p))continue;
+            reachableFromPoint.clear();
 
-            emptyFieldsRecursive.clear();
-            reachbleFieldCount = getReachableFields(color,p, emptyFieldsRecursive, 0);
-            if(reachbleFieldCount == emptyFieldCount)
+            reachbleEmptyFieldCount = getReachableFields(color,p, reachableFromPoint, 0);
+            boolean nothingToConquer = reachbleEmptyFieldCount == emptyFieldCount;
+            if(nothingToConquer)
             {
                 return;
             }
             //punkte müssen eingenommen werden
             else
             {
-                for (Point point: emptyFieldsRecursive)
+                getPartsToConquer(color, reachableFromPoint, areaReferencePoints, areaSizes,reachbleEmptyFieldCount, emptyFieldCount);
+            }
+        }
+    }
+
+    private void getPartsToConquer(PlayerColor color, ArrayList<Point> reachableFromPoint, ArrayList<Point> areaReferencePoints, ArrayList<Integer> areaSizes, int reachbleFieldCount, int emptyFieldCount)
+    {
+        for (Point point: reachableFromPoint)
+        {
+        //warum mache ich das?
+            if(areaReferencePoints.size() > 0)
+            {
+                //if (point.x == areaReferencePoints.get(0).x && point.y == areaReferencePoints.get(0).y)
+                //{
+                //   break;
+                //}
+                //ich möchte ein kriterium haben, woran ich erkennen kann, dass es sich hier um eine andere area handelt.
+                if (areaSizes.get(0) != reachbleFieldCount)
                 {
-                    if(pointsToAccess.size() > 0) {
-                        if (point.x == pointsToAccess.get(0).x && point.y == pointsToAccess.get(0).y)
-                        {
-                            break;
-                        }
-                        if (numberPointsInArea.get(0) != reachbleFieldCount)
-                        {
-                            pointsToAccess.add(point);
-                            numberPointsInArea.add(reachbleFieldCount);
-                        }
-                    }
-                    else
-                    {
-                        pointsToAccess.add(point);
-                        numberPointsInArea.add(reachbleFieldCount);
-                    }
-                    if (pointsToAccess.size() ==2)
-                    {
-                        ArrayList<Point> pList = new ArrayList<>();
-                        if(numberPointsInArea.get(0) > numberPointsInArea.get(1))
-                        {
-                            conquerArea(color, pointsToAccess.get(1),pList);
-                            emptyFieldCount -= numberPointsInArea.get(1);
-                            numberPointsInArea.remove(1);
-                            pointsToAccess.remove(1);
-                        }
-                        else
-                        {
-                            conquerArea(color, pointsToAccess.get(0),pList);
-                            emptyFieldCount -= numberPointsInArea.get(0);
-                            numberPointsInArea.remove(0);
-                            pointsToAccess.remove(0);
-                        }
-                        break;
-                    }
+                    areaReferencePoints.add(point);
+                    areaSizes.add(reachbleFieldCount);
                 }
             }
+            else
+            {
+                areaReferencePoints.add(point);
+                areaSizes.add(reachbleFieldCount);
+            }
+            if (areaReferencePoints.size() ==2)
+            {
+                ArrayList<Point> pList = new ArrayList<>();
+                if(areaSizes.get(0) > areaSizes.get(1))
+                {
+                    conquerArea(color, areaReferencePoints.get(1),pList);
+                    emptyFieldCount -= areaSizes.get(1);
+                    areaSizes.remove(1);
+                    areaReferencePoints.remove(1);
+                }
+                else
+                {
+                    conquerArea(color, areaReferencePoints.get(0),pList);
+                    emptyFieldCount -= areaSizes.get(0);
+                    areaSizes.remove(0);
+                    areaReferencePoints.remove(0);
+                }
+            break;
+        }
         }
     }
 
@@ -233,6 +247,7 @@ public class Board
             }
         }
         allPoints.add(p);
+
 
         //ist das feld von dem Spieler occupied.
         if(getContent(p) == FieldContent.getOccupiedByPlayer(color))
