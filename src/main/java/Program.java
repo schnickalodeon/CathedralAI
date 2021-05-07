@@ -1,12 +1,14 @@
+import ai.AI;
 import ai.CleverRandomAI;
+import ai.DeterministicAI;
 import ai.RandomAI;
 import game_logic.Game;
 
 public class Program {
     public static void main(String[] args) {
-        RandomAI ai =  new RandomAI();
-        CleverRandomAI ki = new CleverRandomAI();
-        Game game = new Game(ki, ki);
+        AI alice =  new DeterministicAI();
+        AI bob = new CleverRandomAI();
+        Game game = new Game(alice, bob);
         game.start();
     }
 }

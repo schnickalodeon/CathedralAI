@@ -107,6 +107,15 @@ public abstract class Player {
         return true;
     }
 
+    public List<Move> generateValidMoves(List<Building> buildings)
+    {
+        ArrayList<Move> ml = new ArrayList<>();
+        buildings.forEach(b->
+        {
+            ml.addAll(generateValidMoves(b));
+        });
+        return ml;
+    }
     //for each x,y value, try every building in every rotation, check if its viable if so, add to a list.
     public List<Move> generateValidMoves(Building building)
     {
@@ -166,4 +175,23 @@ public abstract class Player {
     }
 
 
+    public List<Building> getBiggestBuilding()
+    {
+        List<Building>  bigBuildings = new ArrayList<>();
+        int maxSize=0;
+        for( Building b: buildings)
+        {
+            if (b.getSize() > maxSize)
+            {
+                bigBuildings.clear();
+                bigBuildings.add(b);
+                maxSize = b.getSize();
+            }
+            else if (b.getSize()== maxSize)
+            {
+                bigBuildings.add(b);
+            }
+        }
+        return bigBuildings;
+    }
 }

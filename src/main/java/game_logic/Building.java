@@ -21,6 +21,7 @@ public abstract class Building {
         this.turnable = turnable;
         this.playerColor = color;
     }
+    public Integer getSize(){return points.size();}
 
     protected Building(String name, Turnable turnable, Player player, Point...point) {
         this.name = name;
