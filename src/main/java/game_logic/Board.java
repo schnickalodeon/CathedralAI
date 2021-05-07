@@ -239,22 +239,21 @@ public class Board
         {
             return counter;
         }
-        
+        int i=0;
         if(getContent(p)== FieldContent.EMPTY)
         {
-            counter++;
+            i++;
         }
         
         //TODO endrekursiv schreiben für performance
-        counter = getReachableFields(color, new Point (p.x-1,p.y-1),allPoints,counter);
-        counter = getReachableFields(color, new Point (p.x,p.y-1),allPoints,counter);
-        counter = getReachableFields(color, new Point (p.x+1,p.y-1),allPoints,counter);
-        counter = getReachableFields(color, new Point (p.x-1,p.y),allPoints,counter);
-        counter = getReachableFields(color, new Point (p.x+1,p.y),allPoints,counter);
-        counter = getReachableFields(color, new Point (p.x-1,p.y+1),allPoints,counter);
-        counter = getReachableFields(color, new Point (p.x,p.y+1),allPoints,counter);
-        counter = getReachableFields(color, new Point (p.x+1,p.y+1),allPoints,counter);
-        return counter;
+        return getReachableFields(color, new Point (p.x-1,p.y-1),allPoints,counter)+
+        getReachableFields(color, new Point (p.x,p.y-1),allPoints,counter)+
+         getReachableFields(color, new Point (p.x+1,p.y-1),allPoints,counter)+
+         getReachableFields(color, new Point (p.x-1,p.y),allPoints,counter)+
+         getReachableFields(color, new Point (p.x+1,p.y),allPoints,counter)+
+         getReachableFields(color, new Point (p.x-1,p.y+1),allPoints,counter)+
+         getReachableFields(color, new Point (p.x,p.y+1),allPoints,counter)+
+    getReachableFields(color, new Point (p.x+1,p.y+1),allPoints,counter)+i;
     }
 
 
