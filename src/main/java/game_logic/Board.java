@@ -12,6 +12,7 @@ public class Board
 {
     private static final int FIELD_COUNT = 100;
     private  FieldContent[] content = new FieldContent[FIELD_COUNT];
+    protected ArrayList<Point> emptyFields;
 
     public Board()
     {
@@ -120,6 +121,8 @@ public class Board
             //wenn wenn erreichbare felder > höchster wert  && > 0 -> färbe ein.
             //benachbarte felder rekursiv ebenfalls "einnehmen" bis grenzen erreicht werden.
             //empty fields muss verkleinert werden um die anzahl eingenommener punkte
+            if (emptyFieldsRecursive.contains(p))continue;
+
             emptyFieldsRecursive.clear();
             reachbleFieldCount = getReachableFields(color,p, emptyFieldsRecursive, 0);
             if(reachbleFieldCount == emptyFieldCount)
@@ -230,7 +233,7 @@ public class Board
             }
         }
         allPoints.add(p);
-        
+
         //ist das feld von dem Spieler occupied.
         if(getContent(p) == FieldContent.getOccupiedByPlayer(color))
         {
