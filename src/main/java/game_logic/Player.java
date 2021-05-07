@@ -86,13 +86,22 @@ public abstract class Player {
         List<Point> points = move.getOccupyingPoints();
 
         for (Point point: points) {
-            if(getBoard().isOutOfBounds(point))
-            {
+            if (getBoard().isOutOfBounds(point)) {
                 return false;
             }
             FieldContent fieldContent = getBoard().getContent(point);
-            if(fieldContent != FieldContent.EMPTY){
-                return false;
+            if (color == PlayerColor.BLACK) {
+                if (fieldContent != FieldContent.EMPTY && fieldContent != FieldContent.BLACK_TERRITORY)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (fieldContent != FieldContent.EMPTY && fieldContent != FieldContent.WHITE_TERRITORY)
+                {
+                    return false;
+                }
             }
         }
         return true;
