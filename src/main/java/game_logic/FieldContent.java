@@ -29,6 +29,20 @@ public enum FieldContent {
         }
     }
 
+    public static FieldContent getByValue(byte value)
+    {
+        switch (value)
+        {
+            case 0 ->{ return FieldContent.EMPTY; }
+            case 1 ->{ return FieldContent.CATHEDRAL;}
+            case 2 ->{ return FieldContent.WHITE_OCCUPIED;}
+            case 3 ->{ return FieldContent.BLACK_OCCUPIED;}
+            case 4 ->{ return FieldContent.WHITE_TERRITORY;}
+            case 5 ->{ return FieldContent.BLACK_TERRITORY;}
+        }
+        return null;
+    }
+
     public static Color getColor(FieldContent content){
         switch (content){
             case WHITE_OCCUPIED -> { return Color.WHITE; }

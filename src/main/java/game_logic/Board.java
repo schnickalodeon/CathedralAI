@@ -12,12 +12,17 @@ public class Board
 {
     private static final int FIELD_COUNT = 100;
     private  FieldContent[] content = new FieldContent[FIELD_COUNT];
-    protected ArrayList<Point> emptyFields;
 
     public Board()
     {
         Arrays.fill(content,FieldContent.EMPTY);
         System.out.println("end board constructor!");
+    }
+    public Board(Board board)
+    {
+        content = new FieldContent[FIELD_COUNT];
+        System.arraycopy(board.content,0,content,0,FIELD_COUNT);
+
     }
 
 
@@ -102,6 +107,7 @@ public class Board
         return p.x >= pageLength || p.x < 0 ||
                 p.y >= pageLength || p.y < 0;
     }
+
 
     //check if the board has any area that needs to be owned by one of the players.
     //move may not be necessary

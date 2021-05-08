@@ -6,6 +6,7 @@ import game_logic.buildings.Cathedral;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public abstract class Player {
@@ -27,9 +28,10 @@ public abstract class Player {
         return game.getTurnNumber() == 0 && color == PlayerColor.WHITE;
     }
 
-    private Board getBoard(){
+    public Board getBoard(){
         return game.getBoard();
     }
+    public Game getGame(){return game;}
 
     public boolean hasBuffer() {
         return bufferInSeconds > 0;
@@ -45,6 +47,15 @@ public abstract class Player {
         this.game = game;
         this.ai = ai;
         this.bufferInSeconds = 2; //120;
+    }
+    protected Player(Player player)
+    {
+        this.color = player.color;
+        this.name = player.name;
+        this.game = new Game(player.game);
+        this.ai = player.ai;
+        this.buildings = new ArrayList<>(player.buildings);
+        this.viableMoves = new ArrayList<>(player.viableMoves);
     }
 
     public int countPoints(){
@@ -116,6 +127,7 @@ public abstract class Player {
         });
         return ml;
     }
+    //TODO describe every function
     //for each x,y value, try every building in every rotation, check if its viable if so, add to a list.
     public List<Move> generateValidMoves(Building building)
     {
@@ -175,11 +187,12 @@ public abstract class Player {
     }
 
 
-    public List<Building> getBiggestBuilding()
+    public List<Building> getBiggestBuilding(Predicate<Building> filter)
     {
         List<Building>  bigBuildings = new ArrayList<>();
+        List<Building> filteredBuildings  = buildings.stream().filter(filter).collect(Collectors.toList());
         int maxSize=0;
-        for( Building b: buildings)
+        for( Building b: filteredBuildings)
         {
             if (b.getSize() > maxSize)
             {

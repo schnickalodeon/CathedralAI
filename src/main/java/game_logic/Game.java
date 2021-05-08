@@ -29,6 +29,13 @@ public class Game {
         this.black = new PlayerBlack("Bob", this, aiBlack);
         this.isFinished = false;
     }
+    public Game(Game game)
+    {
+        this.board = new Board(game.board);
+        this.white = new PlayerWhite(game.white, this);
+        this.black = new PlayerBlack(game.black, this);
+        this.isFinished = false;
+    }
 
     public void start(){
         createGameFile();
@@ -102,9 +109,13 @@ public class Game {
         }
     }
 
-    private Player getActivePlayer() {
+    public Player getActivePlayer() {
         // White or Black
         return (turnNumber % 2 == 0) ? white : black;
+    }
+    public Player getInactivePlayer()
+    {
+        return (turnNumber % 2 == 0) ? black: white;
     }
 
     private void appendGameFile(){

@@ -1,9 +1,7 @@
 package ai;
 
-import game_logic.Board;
-import game_logic.Building;
-import game_logic.Move;
-import game_logic.Player;
+import game_logic.*;
+import game_logic.buildings.Cathedral;
 import game_logic.buildings.buildingSizeComparitor;
 
 import java.lang.reflect.Array;
@@ -11,9 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-
+import java.util.stream.Collectors;
+/* Heuristiken:
+ *
+ * -> Summe der Punkte, die man durch das Setzen der züge erreicht minimieren
+ * Maximierung von gebiet eingenommen, wenn möglich.
+ *
+*/
 public class DeterministicAI implements AI
 {
+
 
     private static final Random random = new Random();
 
@@ -22,30 +27,58 @@ public class DeterministicAI implements AI
     public Move getMove(Board board, Player player)
     {
         //Wir wollen optimieren für delta anzahlzüge in 3 zügen zukunft.
-        //nur das mit den Meisten points in betracht ziehen.
-        //implementieren das wir uns vorstellen können wie das Board aussieht nach diesem zug.
-        //optimieren nach maximum zügen nach diesem zug.
-        // --> optimieren nach maximum am ende des Nächsten gegnerzuges bei "perfektem spiel"
-        // -> nach n zügen.
+        Move nextMove = null;
+        List<Building> triedBuildings = new ArrayList<>();
 
-        List<Move> moveList = getMovesWithBiggestBuildings(player);
-        int tmp = random.nextInt(moveList.size());
-        return moveList.get(tmp);
+        do {
+                List<Building> biggestunused = player.getBiggestBuilding(b->!triedBuildings.contains(b));
+                List<Move> moveList = player.generateValidMoves(biggestunused);
+                nextMove = determineBestMove(moveList, player);
+                if (nextMove == null) triedBuildings.addAll(biggestunused);
+                if (biggestunused.isEmpty()) return null;
+            }
+        while(nextMove == null);
+
+        return nextMove;
     }
 
-    private List<Move> getMovesWithBiggestBuildings(Player player)
+    private Move determineBestMove(List<Move> possibleMoveList, Player player)
     {
-        List<Building> biggestBuildings = player.getBiggestBuilding();
-        List<Move> moveList = player.generateValidMoves(biggestBuildings);
+        Move bestMove = null;
+        int highestNumPossibleTurns = -1000;
+        for(Move possibleMove : possibleMoveList)
+        {
+            Game testGame = new Game(player.getGame());
+         //figur platzieren
+            // figur entfernen
+            testGame.getActivePlayer().makeMove(possibleMove);
+         //board anschauen
+            //Building muss null sein, damit alle aufgerufen werden, ist allerdings ien überladener Constructor,
+            // deswegebn muss null getypecasted werden
 
+            //20
+            int nextPossibleMoves = testGame.getActivePlayer().generateValidMoves((Building) null).size();
 
-        return moveList;
+            //15
+            int possibleMovesOpponent = testGame.getInactivePlayer().generateValidMoves((Building) null).size();
 
+            int diffPossibleMoves = nextPossibleMoves - possibleMovesOpponent;
+            if(diffPossibleMoves > highestNumPossibleTurns)
+            {
+                bestMove = possibleMove;
+                highestNumPossibleTurns = nextPossibleMoves;
+            }
+        }
+        return bestMove;
     }
 
     @Override
     public Move getFirstMove(Board board, Player player) {
-
-        return null;
+        Cathedral cathedral = new Cathedral();
+        List<Move> moveList = player.getViableMoves()
+                .stream()
+                .filter(m -> m.getBuilding().equals(cathedral))
+                .collect(Collectors.toList());
+        return moveList.get(random.nextInt(moveList.size()));
     }
 }
