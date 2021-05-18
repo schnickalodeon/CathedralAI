@@ -1,5 +1,7 @@
 package game_logic;
 
+import game_logic.buildings.Area;
+
 import java.awt.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -135,8 +137,9 @@ public class Board
             if (reachableFromPoint.contains(p))continue;
             reachableFromPoint.clear();
 
-            reachbleEmptyFieldCount = getReachableFields(color,p, reachableFromPoint, 0);
-            boolean nothingToConquer = reachbleEmptyFieldCount == emptyFieldCount;
+            getReachableFields(color,p, reachableFromPoint, 0);
+            Area reachableEmptyArea = new Area(reachableFromPoint);
+            boolean nothingToConquer = reachableEmptyArea.getAreaSize() == emptyFieldCount;
             if(nothingToConquer)
             {
                 return;
