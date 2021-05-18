@@ -58,11 +58,20 @@ public class DeterministicAI implements AI
 
             //20
             int nextPossibleMoves = testGame.getActivePlayer().generateValidMoves((Building) null).size();
-
+            int possibleSum = 0;
+            int possibleSumOpponent =0;
+            for(Building b : testGame.getActivePlayer().getBuildings())
+            {
+                possibleSum += b.getSize();
+            }
+            for(Building b : testGame.getInactivePlayer().getBuildings())
+            {
+                possibleSumOpponent += b.getSize();
+            }
             //15
             int possibleMovesOpponent = testGame.getInactivePlayer().generateValidMoves((Building) null).size();
 
-            int diffPossibleMoves = nextPossibleMoves - possibleMovesOpponent;
+            int diffPossibleMoves = nextPossibleMoves - possibleMovesOpponent +(possibleSumOpponent-possibleSum)*150;
             if(diffPossibleMoves > highestNumPossibleTurns)
             {
                 bestMove = possibleMove;
