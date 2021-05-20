@@ -1,10 +1,6 @@
 package game_logic;
 
-import game_logic.buildings.Area;
-
 import java.awt.*;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -125,8 +121,7 @@ public class Board
 
 
         //todo Datenstruktur area erstellen
-        ArrayList<Integer> areaSizes =  new ArrayList<>();
-        ArrayList<Point>  areaReferencePoints = new ArrayList<>();
+        ArrayList<Area> listOfAreas = new ArrayList<>();
 
         for (Point p: emptyFields)
         {
@@ -137,8 +132,8 @@ public class Board
             if (reachableFromPoint.contains(p))continue;
             reachableFromPoint.clear();
 
-            getReachableFields(color,p, reachableFromPoint, 0);
-            Area reachableEmptyArea = new Area(reachableFromPoint);
+            reachbleEmptyFieldCount= getReachableFields(color,p, reachableFromPoint, 0);
+            Area reachableEmptyArea = new Area(reachableFromPoint, reachbleEmptyFieldCount);
             boolean nothingToConquer = reachableEmptyArea.getAreaSize() == emptyFieldCount;
             if(nothingToConquer)
             {
@@ -147,53 +142,42 @@ public class Board
             //punkte müssen eingenommen werden
             else
             {
-                getPartsToConquer(color, reachableFromPoint, areaReferencePoints, areaSizes,reachbleEmptyFieldCount, emptyFieldCount);
+                getPartsToConquer(color, listOfAreas ,reachableEmptyArea, emptyFieldCount);
             }
         }
     }
 
-    private void getPartsToConquer(PlayerColor color, ArrayList<Point> reachableFromPoint, ArrayList<Point> areaReferencePoints, ArrayList<Integer> areaSizes, int reachbleFieldCount, int emptyFieldCount)
+    private void getPartsToConquer(PlayerColor color ,ArrayList<Area> listOfAreas,Area newArea, int emptyFieldCount)
     {
-        for (Point point: reachableFromPoint)
-        {
-        //warum mache ich das?
-            if(areaReferencePoints.size() > 0)
-            {
-                //if (point.x == areaReferencePoints.get(0).x && point.y == areaReferencePoints.get(0).y)
-                //{
-                //   break;
-                //}
-                //ich möchte ein kriterium haben, woran ich erkennen kann, dass es sich hier um eine andere area handelt.
-                if (areaSizes.get(0) != reachbleFieldCount)
-                {
-                    areaReferencePoints.add(point);
-                    areaSizes.add(reachbleFieldCount);
+        //gibt es bereits einen Punkt auf den ich mich beziehe? haben wir bereits eine Area erkannt?
+            if (listOfAreas.size() > 0) {
+
+                //wenn sie keinen gemeinsamen punkt haben dann:
+                if (!listOfAreas.get(0).getArea().contains(newArea.getArea().get(0))) {
+                    listOfAreas.add(new Area(new ArrayList<Point>(newArea.getArea()),newArea.getAreaSize()));
                 }
             }
+            //es wurde noch keine area erkannt; folglich kann diese Area gefahrlos hinzugefügt werden.
             else
             {
-                areaReferencePoints.add(point);
-                areaSizes.add(reachbleFieldCount);
+                listOfAreas.add(new Area(new ArrayList<Point>(newArea.getArea()),newArea.getAreaSize()));
             }
-            if (areaReferencePoints.size() ==2)
+            //wir haben 2 Areas gefunden: folglich muss eine eingenommen werden.
+            if (listOfAreas.size() ==2)
             {
                 ArrayList<Point> pList = new ArrayList<>();
-                if(areaSizes.get(0) > areaSizes.get(1))
+                if(listOfAreas.get(0).getAreaSize() >= listOfAreas.get(1).getAreaSize())
                 {
-                    conquerArea(color, areaReferencePoints.get(1),pList);
-                    emptyFieldCount -= areaSizes.get(1);
-                    areaSizes.remove(1);
-                    areaReferencePoints.remove(1);
+                    conquerArea(color, listOfAreas.get(1).getArea().get(0),pList);
+                    emptyFieldCount -= listOfAreas.get(1).getAreaSize();
+                    listOfAreas.remove(1);
                 }
                 else
                 {
-                    conquerArea(color, areaReferencePoints.get(0),pList);
-                    emptyFieldCount -= areaSizes.get(0);
-                    areaSizes.remove(0);
-                    areaReferencePoints.remove(0);
-                }
-            break;
-        }
+                    conquerArea(color, listOfAreas.get(0).getArea().get(0),pList);
+                    emptyFieldCount -= listOfAreas.get(0).getAreaSize();
+                    listOfAreas.remove(0);
+                    }
         }
     }
 
@@ -268,8 +252,7 @@ public class Board
         {
             i++;
         }
-        
-        //TODO endrekursiv schreiben für performance
+
         return getReachableFields(color, new Point (p.x-1,p.y-1),allPoints,counter)+
         getReachableFields(color, new Point (p.x,p.y-1),allPoints,counter)+
          getReachableFields(color, new Point (p.x+1,p.y-1),allPoints,counter)+

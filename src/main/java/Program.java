@@ -7,7 +7,7 @@ import game_logic.Game;
 public class Program {
     public static void main(String[] args) {
         AI alice =  new DeterministicAI();
-        AI bob = new CleverRandomAI();
+        AI bob = new DeterministicAI();
         Game game = new Game(alice, bob);
         game.start();
     }

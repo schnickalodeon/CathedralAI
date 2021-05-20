@@ -45,7 +45,7 @@ public class DeterministicAI implements AI
     private Move determineBestMove(List<Move> possibleMoveList, Player player)
     {
         Move bestMove = null;
-        int highestNumPossibleTurns = -1000;
+        int highestNumPossibleTurns = -100000;
         for(Move possibleMove : possibleMoveList)
         {
             Game testGame = new Game(player.getGame());

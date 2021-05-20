@@ -40,4 +40,9 @@ public class Move {
     {
         return player.toString() + "places " + building.toString() + " at (" + position.x + "|" + position.y+")";
     }
+
+    public void revert()
+    {
+        getPlayer().getBuildings().add(building);
+    }
 }
