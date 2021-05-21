@@ -18,16 +18,22 @@ import java.util.stream.Collectors;
 */
 public class DeterministicAI implements AI
 {
-
+    float x1;
+    float x2;
 
     private static final Random random = new Random();
+    public DeterministicAI(float x1_, float x2_)
+    {
+        x1= x1_;
+        x2= x2_;
+    }
 
 
     @Override
     public Move getMove(Board board, Player player)
     {
         //Wir wollen optimieren für delta anzahlzüge in 3 zügen zukunft.
-        Move nextMove = null;
+        Move nextMove;
         List<Building> triedBuildings = new ArrayList<>();
 
         do {
@@ -45,7 +51,7 @@ public class DeterministicAI implements AI
     private Move determineBestMove(List<Move> possibleMoveList, Player player)
     {
         Move bestMove = null;
-        int highestNumPossibleTurns = -100000;
+        float highestNumPossibleTurns = -100000;
         for(Move possibleMove : possibleMoveList)
         {
             Game testGame = new Game(player.getGame());
@@ -56,22 +62,14 @@ public class DeterministicAI implements AI
             //Building muss null sein, damit alle aufgerufen werden, ist allerdings ien überladener Constructor,
             // deswegebn muss null getypecasted werden
 
-            //20
             int nextPossibleMoves = testGame.getActivePlayer().generateValidMoves((Building) null).size();
-            int possibleSum = 0;
-            int possibleSumOpponent =0;
-            for(Building b : testGame.getActivePlayer().getBuildings())
-            {
-                possibleSum += b.getSize();
-            }
-            for(Building b : testGame.getInactivePlayer().getBuildings())
-            {
-                possibleSumOpponent += b.getSize();
-            }
+
+            int capturedAreaSize= testGame.getBoard().getCapturedArea(testGame.getActivePlayer().getColor());
+
             //15
             int possibleMovesOpponent = testGame.getInactivePlayer().generateValidMoves((Building) null).size();
 
-            int diffPossibleMoves = nextPossibleMoves - possibleMovesOpponent +(possibleSumOpponent-possibleSum)*150;
+            float diffPossibleMoves = (nextPossibleMoves - possibleMovesOpponent)*x1 +(capturedAreaSize)*x2;
             if(diffPossibleMoves > highestNumPossibleTurns)
             {
                 bestMove = possibleMove;
@@ -89,5 +87,10 @@ public class DeterministicAI implements AI
                 .filter(m -> m.getBuilding().equals(cathedral))
                 .collect(Collectors.toList());
         return moveList.get(random.nextInt(moveList.size()));
+    }
+
+    public void printBestNumbers()
+    {
+        System.out.println("x1= "+x1+ " ,x2= "+x2);
     }
 }

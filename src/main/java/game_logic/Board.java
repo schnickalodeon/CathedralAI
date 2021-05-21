@@ -10,11 +10,13 @@ public class Board
 {
     private static final int FIELD_COUNT = 100;
     private  FieldContent[] content = new FieldContent[FIELD_COUNT];
+    private Game game;
 
-    public Board()
+    public Board(Game game_)
     {
         Arrays.fill(content,FieldContent.EMPTY);
         System.out.println("end board constructor!");
+        game = game_;
     }
     public Board(Board board)
     {
@@ -153,7 +155,8 @@ public class Board
             if (listOfAreas.size() > 0) {
 
                 //wenn sie keinen gemeinsamen punkt haben dann:
-                if (!listOfAreas.get(0).getArea().contains(newArea.getArea().get(0))) {
+                if (!listOfAreas.get(0).getArea().contains(newArea.getArea().get(0)))
+                {
                     listOfAreas.add(new Area(new ArrayList<Point>(newArea.getArea()),newArea.getAreaSize()));
                 }
             }
@@ -168,17 +171,25 @@ public class Board
                 ArrayList<Point> pList = new ArrayList<>();
                 if(listOfAreas.get(0).getAreaSize() >= listOfAreas.get(1).getAreaSize())
                 {
-                    conquerArea(color, listOfAreas.get(1).getArea().get(0),pList);
-                    emptyFieldCount -= listOfAreas.get(1).getAreaSize();
-                    listOfAreas.remove(1);
+                    if(listOfAreas.get(1).isConquerable(game.getPreviousMoves(),color) )
+                    {
+
+
+                        conquerArea(color, listOfAreas.get(1).getArea().get(0), pList);
+                        emptyFieldCount -= listOfAreas.get(1).getAreaSize();
+                        listOfAreas.remove(1);
+                    }
                 }
                 else
                 {
-                    conquerArea(color, listOfAreas.get(0).getArea().get(0),pList);
-                    emptyFieldCount -= listOfAreas.get(0).getAreaSize();
-                    listOfAreas.remove(0);
+                    if(listOfAreas.get(0).isConquerable(game.getPreviousMoves(),color) )
+                    {
+                        conquerArea(color, listOfAreas.get(0).getArea().get(0), pList);
+                        emptyFieldCount -= listOfAreas.get(0).getAreaSize();
+                        listOfAreas.remove(0);
                     }
-        }
+                }
+            }
     }
 
     private void conquerArea(PlayerColor color, Point p, List<Point> allPoints)
@@ -199,11 +210,7 @@ public class Board
         {
             return;
         }
-        /*TODO wenn aus der move liste 2 moves in diesem bereich gemacht wurden, (was mit koordinatenabfrage gut möglich ist) mache alle felder,
-        die NICHT der spielerfarbe entsprechen eingenommen.
-        remove die Figur vom Board, und gebe sie dem Spieler wieder. */
-        if(true)
-        {
+
             if (color == PlayerColor.BLACK)
             {
                 setContent(p, FieldContent.BLACK_TERRITORY);
@@ -220,7 +227,6 @@ public class Board
             conquerArea(color, new Point (p.x-1,p.y+1),allPoints);
             conquerArea(color, new Point (p.x,p.y+1),allPoints);
             conquerArea(color, new Point (p.x+1,p.y+1),allPoints);
-        }
     }
 
     private int getReachableFields(PlayerColor color, Point p, List<Point> allPoints, int counter)
@@ -275,5 +281,15 @@ public class Board
             }
         }
         return emptyPoints;
+    }
+
+    public int getCapturedArea(PlayerColor color) {
+        int capturedCount =0;
+        for (FieldContent f : content)
+        {
+            if (color == PlayerColor.BLACK&& f==FieldContent.BLACK_TERRITORY
+                    || color==PlayerColor.WHITE && f==FieldContent.WHITE_TERRITORY) capturedCount++;
+        }
+        return capturedCount;
     }
 }

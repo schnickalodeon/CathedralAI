@@ -36,6 +36,11 @@ public class RandomAI implements AI{
         return new Move(randomPoint,cathedral,randomDirection,player);
     }
 
+    @Override
+    public void printBestNumbers() {
+
+    }
+
     private static Direction getRandomDirection() {
         int iRandom = random.nextInt(3);
         return Direction.values()[iRandom];

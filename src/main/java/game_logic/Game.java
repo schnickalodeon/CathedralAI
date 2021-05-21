@@ -4,6 +4,7 @@ import ai.AI;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -20,11 +21,11 @@ public class Game {
     private ArrayList<Move> moves = new ArrayList<>();
 
     public int getTurnNumber(){ return turnNumber; }
-
+    public ArrayList<Move> getPreviousMoves(){return moves;}
     public Board getBoard(){ return board; }
 
     public Game(AI aiWhite, AI aiBlack) {
-        this.board = new Board();
+        this.board = new Board(this);
         this.white = new PlayerWhite("Alice", this, aiWhite);
         this.black = new PlayerBlack("Bob", this, aiBlack);
         this.isFinished = false;
@@ -37,7 +38,7 @@ public class Game {
         this.isFinished = false;
     }
 
-    public void start(){
+    public boolean start(){
         createGameFile();
         System.out.println("starting game...");
 
@@ -48,6 +49,7 @@ public class Game {
         printResult();
 
         closeGameFile();
+        return white.countPoints()> black.countPoints();
     }
 
     private void printResult() {
@@ -59,8 +61,8 @@ public class Game {
     public void turn(){
         LocalTime startTurn = LocalTime.now();
         Player player = getActivePlayer();
-        LocalTime bufferStart = null;
-        boolean wasSuccessful = false;
+        LocalTime bufferStart;
+        boolean wasSuccessful;
         do {
 
             Move move = player.getNextMove();

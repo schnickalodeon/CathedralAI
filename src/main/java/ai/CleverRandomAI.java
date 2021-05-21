@@ -28,4 +28,9 @@ public class CleverRandomAI implements AI{
                 .collect(Collectors.toList());
         return moveList.get(random.nextInt(moveList.size()));
     }
+
+    @Override
+    public void printBestNumbers() {
+
+    }
 }

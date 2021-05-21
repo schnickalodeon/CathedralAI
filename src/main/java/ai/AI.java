@@ -7,4 +7,5 @@ import game_logic.Player;
 public interface AI {
     Move getMove(Board board, Player player);
     Move getFirstMove(Board board, Player player);
+    void printBestNumbers();
 }
