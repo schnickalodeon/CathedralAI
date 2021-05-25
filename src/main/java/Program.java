@@ -11,7 +11,7 @@ public class Program {
 
         Random r = new Random();
         //0.16381311 282.0
-        AI alice =  new DeterministicAI((float)0.16381311,282);
+        AI alice =  new DeterministicAI(r.nextFloat(),r.nextInt(100), r.nextInt(10));
         AI bob = new CleverRandomAI();
         for(int i=0; i<10;i++)
         {
@@ -19,9 +19,9 @@ public class Program {
             boolean didWhitewin = game.start();
 
             if (didWhitewin) {
-                bob = new DeterministicAI(r.nextFloat(), r.nextInt(1000));
+                bob = new DeterministicAI(r.nextFloat(), r.nextInt(1000),r.nextInt(50));
             } else {
-                alice = new DeterministicAI(r.nextFloat(), r.nextInt(1000));
+                alice = new DeterministicAI(r.nextFloat(), r.nextInt(1000),r.nextInt(50));
             }
         }
         bob.printBestNumbers();

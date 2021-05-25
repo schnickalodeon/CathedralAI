@@ -20,12 +20,14 @@ public class DeterministicAI implements AI
 {
     float x1;
     float x2;
+    float x3;
 
     private static final Random random = new Random();
-    public DeterministicAI(float x1_, float x2_)
-    {
-        x1= x1_;
-        x2= x2_;
+
+    public DeterministicAI(float x1_, float x2_, float x3) {
+        x1 = x1_;
+        x2 = x2_;
+        this.x3= x3;
     }
 
 
@@ -37,43 +39,67 @@ public class DeterministicAI implements AI
         List<Building> triedBuildings = new ArrayList<>();
 
         do {
-                List<Building> biggestunused = player.getBiggestBuilding(b->!triedBuildings.contains(b));
-                List<Move> moveList = player.generateValidMoves(biggestunused);
-                nextMove = determineBestMove(moveList, player);
-                if (nextMove == null) triedBuildings.addAll(biggestunused);
-                if (biggestunused.isEmpty()) return null;
+            List<Building> biggestunused = player.getBiggestBuilding(b -> !triedBuildings.contains(b));
+            List<Move> moveList;
+            if (biggestunused.size() == 1) {
+                if(biggestunused.get(0).getSize()==6) moveList = player.generateValidMoves(biggestunused);
+                else{moveList = player.generateValidMoves(player.getBuildings());}
+            } else {
+                moveList = player.generateValidMoves(player.getBuildings());
             }
-        while(nextMove == null);
+            nextMove = determineBestMove(moveList, player);
+            if (nextMove == null) triedBuildings.addAll(biggestunused);
+            if (biggestunused.isEmpty()) return null;
+        }
+        while (nextMove == null);
 
         return nextMove;
     }
 
-    private Move determineBestMove(List<Move> possibleMoveList, Player player)
-    {
+    //Schauen uns für die n vielversprechendsten züge die "nächsten" m moves von uns an.
+    //wobei n,m ausprobiert werden muss.
+    //sind die metriken zu stark??
+
+    //Versuche anzahl der unspielbaren punkte des gegners maximieren.
+
+    private Move determineBestMove(List<Move> possibleMoveList, Player player) {
         Move bestMove = null;
-        float highestNumPossibleTurns = -100000;
-        for(Move possibleMove : possibleMoveList)
-        {
+        float highestNumPossibleTurns = -Float.MAX_VALUE;
+        for (Move possibleMove : possibleMoveList) {
             Game testGame = new Game(player.getGame());
-         //figur platzieren
+            //figur platzieren
             // figur entfernen
             testGame.getActivePlayer().makeMove(possibleMove);
-         //board anschauen
+            //board anschauen
             //Building muss null sein, damit alle aufgerufen werden, ist allerdings ien überladener Constructor,
             // deswegebn muss null getypecasted werden
 
+
+            //vars for testing
             int nextPossibleMoves = testGame.getActivePlayer().generateValidMoves((Building) null).size();
-
-            int capturedAreaSize= testGame.getBoard().getCapturedArea(testGame.getActivePlayer().getColor());
+            int capturedAreaSize = testGame.getBoard().getCapturedArea(testGame.getActivePlayer().getColor());
             int capturedAreaSizeOpponent = testGame.getBoard().getCapturedArea(testGame.getInactivePlayer().getColor());
-            //15
             int possibleMovesOpponent = testGame.getInactivePlayer().generateValidMoves((Building) null).size();
+            int currentScore=0;
 
-            float diffPossibleMoves = (nextPossibleMoves - possibleMovesOpponent)*x1 +(capturedAreaSize-capturedAreaSizeOpponent)*x2*x2;
-            if(diffPossibleMoves > highestNumPossibleTurns)
+            for(Building  b: testGame.getActivePlayer().getBuildings())
             {
+                currentScore += b.getSize();
+            }
+            int currentScoreOpponent=0;
+            for (Building b: testGame.getInactivePlayer().getBuildings())
+            {
+                currentScoreOpponent += b.getSize();
+            }
+
+//(nextPossibleMoves - possibleMovesOpponent) * x1
+            float possibleMovesFactored =(nextPossibleMoves - possibleMovesOpponent) ;
+            float deltaAreaSize= (capturedAreaSize-capturedAreaSizeOpponent);
+            float deltaCurrentScore = (currentScoreOpponent-(currentScore-possibleMove.getBuilding().getSize()));
+            float diffPossibleMoves = possibleMovesFactored*x1 + deltaAreaSize*x2*x2 +deltaCurrentScore*x3;
+            if (diffPossibleMoves > highestNumPossibleTurns) {
                 bestMove = possibleMove;
-                highestNumPossibleTurns = nextPossibleMoves;
+                highestNumPossibleTurns = diffPossibleMoves;
             }
         }
         return bestMove;
@@ -89,8 +115,7 @@ public class DeterministicAI implements AI
         return moveList.get(random.nextInt(moveList.size()));
     }
 
-    public void printBestNumbers()
-    {
-        System.out.println("x1= "+x1+ " ,x2= "+x2);
+    public void printBestNumbers() {
+        System.out.println("x1= " + x1 + " ,x2= " + x2+ ",x3="+x3);
     }
 }
