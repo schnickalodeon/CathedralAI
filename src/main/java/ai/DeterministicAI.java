@@ -1,13 +1,12 @@
 package ai;
 
+import ai.heuristic.Heuristic;
+import ai.heuristic.MichelsSuperHeuristic;
 import game_logic.*;
 import game_logic.buildings.Cathedral;
-import game_logic.buildings.buildingSizeComparitor;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 /* Heuristiken:
@@ -64,44 +63,10 @@ public class DeterministicAI implements AI
 
     private Move determineBestMove(List<Move> possibleMoveList, Player player) {
         Move bestMove = null;
-        float highestNumPossibleTurns = -Float.MAX_VALUE;
-        for (Move possibleMove : possibleMoveList) {
-            Game testGame = new Game(player.getGame());
-            //figur platzieren
-            // figur entfernen
-            testGame.getActivePlayer().makeMove(possibleMove);
-            //board anschauen
-            //Building muss null sein, damit alle aufgerufen werden, ist allerdings ien überladener Constructor,
-            // deswegebn muss null getypecasted werden
+        Heuristic michelsSuperHeuristic = new MichelsSuperHeuristic(player,x1,x2,x3);
 
+        bestMove = michelsSuperHeuristic.getBestMove(possibleMoveList);
 
-            //vars for testing
-            int nextPossibleMoves = testGame.getActivePlayer().generateValidMoves((Building) null).size();
-            int capturedAreaSize = testGame.getBoard().getCapturedArea(testGame.getActivePlayer().getColor());
-            int capturedAreaSizeOpponent = testGame.getBoard().getCapturedArea(testGame.getInactivePlayer().getColor());
-            int possibleMovesOpponent = testGame.getInactivePlayer().generateValidMoves((Building) null).size();
-            int currentScore=0;
-
-            for(Building  b: testGame.getActivePlayer().getBuildings())
-            {
-                currentScore += b.getSize();
-            }
-            int currentScoreOpponent=0;
-            for (Building b: testGame.getInactivePlayer().getBuildings())
-            {
-                currentScoreOpponent += b.getSize();
-            }
-
-//(nextPossibleMoves - possibleMovesOpponent) * x1
-            float possibleMovesFactored =(nextPossibleMoves - possibleMovesOpponent) ;
-            float deltaAreaSize= (capturedAreaSize-capturedAreaSizeOpponent);
-            float deltaCurrentScore = (currentScoreOpponent-(currentScore-possibleMove.getBuilding().getSize()));
-            float diffPossibleMoves = possibleMovesFactored*x1 + deltaAreaSize*x2*x2 +deltaCurrentScore*x3;
-            if (diffPossibleMoves > highestNumPossibleTurns) {
-                bestMove = possibleMove;
-                highestNumPossibleTurns = diffPossibleMoves;
-            }
-        }
         return bestMove;
     }
 
