@@ -9,18 +9,14 @@ import java.util.List;
 
 public abstract class Heuristic implements Heuristicable {
     protected float factor;
-    private Game game;
     protected Game testGame;
-    protected List<Move> moves;
 
 
-    protected Heuristic(float factor, Game game, List<Move> moves) {
+    protected Heuristic(float factor) {
         this.factor = factor;
-        this.moves = moves;
-        this.game = game;
     }
 
-    public List<MoveResult> evaluate(){
+    public List<MoveResult> evaluate(List<Move> moves, Game game){
         List<MoveResult> results = new ArrayList<>();
 
         for(Move m: moves){
@@ -31,6 +27,13 @@ public abstract class Heuristic implements Heuristicable {
             results.add(result);
         }
         return results;
+    }
+
+    public MoveResult evaluate(Move move, Game game){
+        testGame = new Game(game);
+        testGame.getActivePlayer().makeMove(move);
+        float score =  calculateScore();
+        return new MoveResult(move,score);
     }
 
 

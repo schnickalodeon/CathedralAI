@@ -23,6 +23,8 @@ public class Game {
     public ArrayList<Move> getPreviousMoves(){return moves;}
     public Board getBoard(){ return board; }
 
+
+
     public Game(ArtificialIntelligent artificialIntelligentWhite, ArtificialIntelligent artificialIntelligentBlack) {
         this.board = new Board(this);
         this.white = new PlayerWhite("Alice", this, artificialIntelligentWhite);

@@ -22,10 +22,21 @@ public class DeterministicAI extends AI
 
     private static final Random random = new Random();
 
-    public DeterministicAI(float x1_, float x2_, float x3) {
-        possibleMovesFactor = x1_;
-        areaSizeFactor = x2_;
+    public DeterministicAI(float x1, float x2, float x3) {
+        this.possibleMovesFactor = x1;
+        this.areaSizeFactor = x2;
         this.scoreFactor = x3;
+        addHeuristics();
+    }
+
+    private void addHeuristics(){
+        Heuristic maximizeScore = new MaximizeDeltaScoreHeuristic(scoreFactor);
+        Heuristic maximizePossibleMoves = new MaximizeDeltaPosibleMovesHeuristic(scoreFactor);
+        Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(scoreFactor);
+
+        this.addHeuristic(maximizeScore);
+        this.addHeuristic(maximizePossibleMoves);
+        this.addHeuristic(maximizeAreaSize);
     }
 
 
@@ -61,17 +72,8 @@ public class DeterministicAI extends AI
     //Versuche anzahl der unspielbaren punkte des gegners maximieren.
 
     private Move determineBestMove(List<Move> possibleMoveList, Player player) {
-        Game game = player.getGame();
 
-        Heuristic maximizeScore = new MaximizeDeltaScoreHeuristic(scoreFactor,game,possibleMoveList);
-        Heuristic maximizePossibleMoves = new MaximizeDeltaPosibleMovesHeuristic(scoreFactor,game,possibleMoveList);
-        Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(scoreFactor,game,possibleMoveList);
-
-        this.addHeuristic(maximizeScore);
-        this.addHeuristic(maximizePossibleMoves);
-        this.addHeuristic(maximizeAreaSize);
-
-        return this.getBestMove(possibleMoveList);
+        return this.getBestMove(possibleMoveList, player.getGame());
 
         /*
         MoveResult bestResult = null;

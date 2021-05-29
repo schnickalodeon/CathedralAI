@@ -3,25 +3,25 @@ package ai;
 import ai.ArtificialIntelligent;
 import ai.heuristic.Heuristic;
 import ai.heuristic.MoveResult;
+import game_logic.Game;
 import game_logic.Move;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AI implements ArtificialIntelligent {
-    private List<Heuristic> heuristics;
+    private List<Heuristic> heuristics = new ArrayList<>();
 
     protected void addHeuristic(Heuristic heuristic){
         heuristics.add(heuristic);
     }
 
-    protected Move getBestMove(List<Move> possibleMoves){
+    protected Move getBestMove(List<Move> possibleMoves, Game game){
         List<MoveResult> results = new ArrayList<>();
         Move bestMove = null;
 
         possibleMoves.forEach(m -> {
-            float score = calculateScore(m);
-            results.add(new MoveResult(m,score));
+            float score = calculateScore(m, game);
             results.add(new MoveResult(m,score));
         });
 
@@ -33,17 +33,11 @@ public abstract class AI implements ArtificialIntelligent {
     }
 
 
-
-    private float calculateScore(Move move){
+    private float calculateScore(Move move, Game game){
 
         float score = 0;
         for(Heuristic h: heuristics){
-            List<MoveResult> results = h.evaluate();
-            MoveResult result = results.stream()
-                    .filter(r -> r.getMove().equals(move))
-                    .findFirst()
-                    .orElse(null);
-
+            MoveResult result = h.evaluate(move, game);
             score += result.getScore();
         };
 

@@ -8,8 +8,8 @@ import java.util.List;
 
 public class MaximizeDeltaAreasizeHeuristic extends Heuristic {
 
-    public MaximizeDeltaAreasizeHeuristic(float factor, Game game, List<Move> moves) {
-        super(factor, game, moves);
+    public MaximizeDeltaAreasizeHeuristic(float factor) {
+        super(factor);
     }
 
     @Override
@@ -25,3 +25,4 @@ public class MaximizeDeltaAreasizeHeuristic extends Heuristic {
         return capturedAreaSize;
     }
 }
+

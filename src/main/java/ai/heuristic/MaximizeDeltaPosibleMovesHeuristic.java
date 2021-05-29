@@ -9,8 +9,8 @@ import java.util.List;
 
 public class MaximizeDeltaPosibleMovesHeuristic extends Heuristic {
 
-    public MaximizeDeltaPosibleMovesHeuristic(float factor, Game game, List<Move> moves) {
-        super(factor, game, moves);
+    public MaximizeDeltaPosibleMovesHeuristic(float factor) {
+        super(factor);
     }
 
     @Override
