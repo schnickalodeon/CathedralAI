@@ -12,7 +12,7 @@ import java.awt.Point;
 import java.util.List;
 import java.util.Random;
 
-public class RandomAI implements AI{
+public class RandomAI extends AI {
 
     private static final Random random = new Random();
 

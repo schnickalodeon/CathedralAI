@@ -1,7 +1,6 @@
 package ai;
 
-import ai.heuristic.Heuristic;
-import ai.heuristic.MichelsSuperHeuristic;
+import ai.heuristic.*;
 import game_logic.*;
 import game_logic.buildings.Cathedral;
 
@@ -15,18 +14,18 @@ import java.util.stream.Collectors;
  * Maximierung von gebiet eingenommen, wenn möglich.
  *
 */
-public class DeterministicAI implements AI
+public class DeterministicAI extends AI
 {
-    float x1;
-    float x2;
-    float x3;
+    float possibleMovesFactor;
+    float areaSizeFactor;
+    float scoreFactor;
 
     private static final Random random = new Random();
 
     public DeterministicAI(float x1_, float x2_, float x3) {
-        x1 = x1_;
-        x2 = x2_;
-        this.x3= x3;
+        possibleMovesFactor = x1_;
+        areaSizeFactor = x2_;
+        this.scoreFactor = x3;
     }
 
 
@@ -62,12 +61,33 @@ public class DeterministicAI implements AI
     //Versuche anzahl der unspielbaren punkte des gegners maximieren.
 
     private Move determineBestMove(List<Move> possibleMoveList, Player player) {
-        Move bestMove = null;
-        Heuristic michelsSuperHeuristic = new MichelsSuperHeuristic(player,x1,x2,x3);
+        Game game = player.getGame();
 
-        bestMove = michelsSuperHeuristic.getBestMove(possibleMoveList);
+        Heuristic maximizeScore = new MaximizeDeltaScoreHeuristic(scoreFactor,game,possibleMoveList);
+        Heuristic maximizePossibleMoves = new MaximizeDeltaPosibleMovesHeuristic(scoreFactor,game,possibleMoveList);
+        Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(scoreFactor,game,possibleMoveList);
 
-        return bestMove;
+        this.addHeuristic(maximizeScore);
+        this.addHeuristic(maximizePossibleMoves);
+        this.addHeuristic(maximizeAreaSize);
+
+        return this.getBestMove(possibleMoveList);
+
+        /*
+        MoveResult bestResult = null;
+        Heuristic michelsSuperHeuristic = new MichelsSuperHeuristic(player,x1,x2,x3, possibleMoveList);
+        //Heurisic terkjkafsj = new MA();
+        //
+
+
+        List<MoveResult> moves = michelsSuperHeuristic.evaluate();
+
+        Optional<MoveResult> first = moves.stream().findFirst();
+        bestResult = first.isPresent() ? first.get() : null;
+
+        return bestResult.getMove();
+
+         */
     }
 
     @Override
@@ -81,6 +101,6 @@ public class DeterministicAI implements AI
     }
 
     public void printBestNumbers() {
-        System.out.println("x1= " + x1 + " ,x2= " + x2+ ",x3="+x3);
+        System.out.println("x1= " + possibleMovesFactor + " ,x2= " + areaSizeFactor + ",x3="+ scoreFactor);
     }
 }

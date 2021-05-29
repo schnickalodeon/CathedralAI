@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class CleverRandomAI implements AI{
+public class CleverRandomAI extends AI {
 
     private static final Random random = new Random();
 

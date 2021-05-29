@@ -1,6 +1,6 @@
 package game_logic;
 
-import ai.AI;
+import ai.ArtificialIntelligent;
 import game_logic.buildings.Cathedral;
 
 import java.awt.*;
@@ -13,7 +13,7 @@ public abstract class Player {
     protected final PlayerColor color;
     protected final String name;
     protected final Game game;
-    protected final AI ai;
+    protected final ArtificialIntelligent artificialIntelligent;
     protected List<Building> buildings = new ArrayList<>();
     protected List<Move> viableMoves = new ArrayList<>();
     protected int timeOuts =0;
@@ -41,11 +41,11 @@ public abstract class Player {
         return bufferInSeconds;
     }
 
-    protected Player(PlayerColor color, String name, Game game, AI ai) {
+    protected Player(PlayerColor color, String name, Game game, ArtificialIntelligent artificialIntelligent) {
         this.color = color;
         this.name = name;
         this.game = game;
-        this.ai = ai;
+        this.artificialIntelligent = artificialIntelligent;
         this.bufferInSeconds = 2; //120;
     }
     protected Player(Player player)
@@ -53,7 +53,7 @@ public abstract class Player {
         this.color = player.color;
         this.name = player.name;
         this.game = new Game(player.game);
-        this.ai = player.ai;
+        this.artificialIntelligent = player.artificialIntelligent;
         this.buildings = new ArrayList<>(player.buildings);
         this.viableMoves = new ArrayList<>(player.viableMoves);
     }
@@ -76,7 +76,7 @@ public abstract class Player {
         {
             return null;
         }
-        return ai.getMove(getBoard(),this);
+        return artificialIntelligent.getMove(getBoard(),this);
     }
 
     public boolean makeMove(Move move)
