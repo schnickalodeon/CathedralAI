@@ -1,10 +1,9 @@
 package game_logic;
 
-import ai.AI;
+import ai.ArtificialIntelligent;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -24,10 +23,10 @@ public class Game {
     public ArrayList<Move> getPreviousMoves(){return moves;}
     public Board getBoard(){ return board; }
 
-    public Game(AI aiWhite, AI aiBlack) {
+    public Game(ArtificialIntelligent artificialIntelligentWhite, ArtificialIntelligent artificialIntelligentBlack) {
         this.board = new Board(this);
-        this.white = new PlayerWhite("Alice", this, aiWhite);
-        this.black = new PlayerBlack("Bob", this, aiBlack);
+        this.white = new PlayerWhite("Alice", this, artificialIntelligentWhite);
+        this.black = new PlayerBlack("Bob", this, artificialIntelligentBlack);
         this.isFinished = false;
     }
     public Game(Game game)

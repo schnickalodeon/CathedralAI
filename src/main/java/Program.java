@@ -1,7 +1,6 @@
-import ai.AI;
+import ai.ArtificialIntelligent;
 import ai.CleverRandomAI;
 import ai.DeterministicAI;
-import ai.RandomAI;
 import game_logic.Game;
 
 import java.util.Random;
@@ -11,8 +10,8 @@ public class Program {
 
         Random r = new Random();
         //0.16381311 282.0
-        AI alice =  new DeterministicAI(r.nextFloat(),r.nextInt(100), r.nextInt(10));
-        AI bob = new CleverRandomAI();
+        ArtificialIntelligent alice =  new DeterministicAI(r.nextFloat(),r.nextInt(100), r.nextInt(10));
+        ArtificialIntelligent bob = new CleverRandomAI();
         for(int i=0; i<10;i++)
         {
             Game game = new Game(alice, bob);

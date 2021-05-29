@@ -7,7 +7,7 @@ import game_logic.Player;
 
 import java.util.List;
 
-public class MichelsSuperHeuristic implements Heuristic {
+public class MichelsSuperHeuristic extends Heuristic {
 
     private Player player;
 
@@ -16,19 +16,19 @@ public class MichelsSuperHeuristic implements Heuristic {
     private float x2;
     private float x3;
 
-    public MichelsSuperHeuristic(Player player, float x1, float x2, float x3) {
+    public MichelsSuperHeuristic(Player player, float x1, float x2, float x3, List<Move> posibleMoves) {
         this.player = player;
         this.x1 = x1;
         this.x2 = x2;
         this.x3 = x3;
+        this.moves = posibleMoves;
     }
 
-    @Override
-    public Move getBestMove(List<Move> possibleMoveList) {
+    public MoveResult getBestMove() {
         Move bestMove = null;
 
         float highestNumPossibleTurns = -Float.MAX_VALUE;
-        for (Move possibleMove : possibleMoveList) {
+        for (Move possibleMove : moves) {
             Game testGame = new Game(player.getGame());
             //figur platzieren
             // figur entfernen
@@ -65,6 +65,11 @@ public class MichelsSuperHeuristic implements Heuristic {
                 highestNumPossibleTurns = diffPossibleMoves;
             }
         }
-        return bestMove;
+        return new MoveResult(bestMove,0);
+    }
+
+    @Override
+    protected float calculateScore() {
+        return 0;
     }
 }
