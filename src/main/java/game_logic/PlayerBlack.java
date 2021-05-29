@@ -3,7 +3,7 @@ package game_logic;
 import ai.ArtificialIntelligent;
 
 import java.util.ArrayList;
-
+//was
 public class PlayerBlack extends Player{
     public PlayerBlack(String name, Game game, ArtificialIntelligent artificialIntelligent) {
         super(PlayerColor.BLACK, name, game, artificialIntelligent);
