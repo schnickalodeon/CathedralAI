@@ -9,6 +9,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 public class Game {
+    private static final boolean DEBUG = true;
     private static final int TURN_MAX_TIME = 3;
     private static final String GAME_FILE_NAME = "Game.html";
     private final Board board;
@@ -86,7 +87,11 @@ public class Game {
             }
             wasSuccessful = player.makeMove(move);
             if(wasSuccessful){
-                System.out.println(move);
+                if(DEBUG)
+                {
+                    System.out.println(move);
+                }
+
                 board.checkArea(move.getPlayer().getColor());
                 if(bufferStart != null){
                     long bufferUsed = bufferStart.until(LocalTime.now(),ChronoUnit.SECONDS);

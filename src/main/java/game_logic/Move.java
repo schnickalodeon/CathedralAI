@@ -38,7 +38,7 @@ public class Move {
     public Point getPosition() { return position;}
     public String toString()
     {
-        return player.toString() + "places " + building.toString() + " at (" + position.x + "|" + position.y+")";
+        return player.toString() + " places " + building.toString() + " at (" + position.x + "|" + position.y+")";
     }
 
     public void revert()
