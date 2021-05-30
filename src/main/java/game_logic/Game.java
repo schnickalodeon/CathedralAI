@@ -5,11 +5,13 @@ import ai.ArtificialIntelligent;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Game {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final int TURN_MAX_TIME = 3;
     private static final String GAME_FILE_NAME = "Game.html";
     private final Board board;
@@ -17,6 +19,9 @@ public class Game {
     private final Player black;
     private boolean isFinished;
     private int turnNumber = 0;
+
+    private ZonedDateTime start;
+    private ZonedDateTime end;
 
     private ArrayList<Move> moves = new ArrayList<>();
 
@@ -43,10 +48,12 @@ public class Game {
     public boolean start(){
         createGameFile();
         System.out.println("starting game...");
+        start = ZonedDateTime.now();
 
         while(!isFinished){
             turn();
         }
+        end = ZonedDateTime.now();
 
         printResult();
 
@@ -55,9 +62,11 @@ public class Game {
     }
 
     private void printResult() {
-        System.out.println("\nThe Game is over!!\n------------------------------");
+        long seconds = ChronoUnit.SECONDS.between(start,end);
+        System.out.println(String.format("\nThe Game is over and took %d Seconds\n------------------------------", seconds));
         System.out.println(white.getResult());
         System.out.println(black.getResult());
+        System.out.println("=========================\n\n");
     }
 
     public void turn(){
@@ -82,7 +91,7 @@ public class Game {
 
             if (move == null)
             {
-                System.out.println("failed to move!");
+                if(DEBUG) System.out.println("failed to move!");
                 break;
             }
             wasSuccessful = player.makeMove(move);

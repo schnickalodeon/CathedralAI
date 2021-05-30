@@ -15,7 +15,6 @@ public class Board
     public Board(Game game_)
     {
         Arrays.fill(content,FieldContent.EMPTY);
-        System.out.println("end board constructor!");
         game = game_;
     }
     public Board(Board board, Game game_)
