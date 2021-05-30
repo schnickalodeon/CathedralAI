@@ -14,7 +14,7 @@ public class MaximizeDeltaPosibleMovesHeuristic extends Heuristic {
     }
 
     @Override
-    protected float calculateScore() {
+    protected float calculateScore(Move move) {
 
         int ourPossibleNextMoves = calculatePossibleNextMoves(testGame.getActivePlayer());
         int opponentPossibleNextMoves = calculatePossibleNextMoves(testGame.getInactivePlayer());

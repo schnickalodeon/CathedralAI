@@ -18,9 +18,10 @@ public class Board
         System.out.println("end board constructor!");
         game = game_;
     }
-    public Board(Board board)
+    public Board(Board board, Game game_)
     {
         content = new FieldContent[FIELD_COUNT];
+        game = game_;
         System.arraycopy(board.content,0,content,0,FIELD_COUNT);
 
     }

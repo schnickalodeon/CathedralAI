@@ -34,7 +34,7 @@ public class Game {
     }
     public Game(Game game)
     {
-        this.board = new Board(game.board);
+        this.board = new Board(game.board, this);
         this.white = new PlayerWhite(game.white, this);
         this.black = new PlayerBlack(game.black, this);
         this.isFinished = false;

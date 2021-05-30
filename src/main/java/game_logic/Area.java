@@ -39,7 +39,8 @@ public class Area
     {
         ArrayList<Move> movesInArea=  new ArrayList<>();
         for (int i=0; i<moves.size();i++) {
-            if (contains(moves.get(i).getPosition()) && color != moves.get(i).getPlayer().getColor()) {
+            if (contains(moves.get(i).getPosition()) && color != moves.get(i).getPlayer().getColor()||
+            contains(moves.get(i).getPosition()) && moves.get(i).getBuilding().getSize() == 6) {
                 movesInArea.add(moves.get(i));
             }
         }
