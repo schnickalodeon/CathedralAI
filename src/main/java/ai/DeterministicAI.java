@@ -73,7 +73,7 @@ public class DeterministicAI extends AI
 
     private Move determineBestMove(List<Move> possibleMoveList, Player player) {
 
-        return this.getBestMove(possibleMoveList, player.getGame());
+        return this.getBestMove(possibleMoveList, player.getGame()).get(0).getMove();
 
         /*
         MoveResult bestResult = null;

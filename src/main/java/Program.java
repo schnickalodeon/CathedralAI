@@ -34,6 +34,9 @@ public class Program extends PApplet {
     }
 
     public void setup() {
+        while(game == null)
+        {
+        }
         gui.setup(this, game);
     }
 

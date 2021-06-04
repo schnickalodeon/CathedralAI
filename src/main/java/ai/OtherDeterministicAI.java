@@ -69,8 +69,40 @@ public class OtherDeterministicAI extends AI
     //Versuche anzahl der unspielbaren punkte des gegners maximieren.
 
     private Move determineBestMove(List<Move> possibleMoveList, Player player) {
+        List<MoveResult> PromisingMoves;
+        PromisingMoves = this.getBestMove(possibleMoveList, player.getGame());
 
-        return this.getBestMove(possibleMoveList, player.getGame());
+
+        List<Float> allTheGoodMoves = new ArrayList<>();
+        int moveSelector=0;
+        float moveScore = 0;
+        int pointer=0;
+        for (MoveResult m : PromisingMoves)
+        {
+            Game test = new Game(player.getGame());
+            test.getActivePlayer().makeMove(m.getMove());
+            test.getActivePlayer().removeBuildiung(m.getMove().getBuilding());
+            List<MoveResult> listOfGoodMoves;
+            listOfGoodMoves = this.getBestMove(test.getActivePlayer().generateValidMoves(test.getActivePlayer().getBuildings()),test);
+            float sum=0;
+            for (MoveResult mr: listOfGoodMoves)
+            {
+                sum += mr.getScore();
+            }
+            sum/= listOfGoodMoves.size();
+            if (moveScore < sum) {
+                moveScore = sum;
+                moveSelector = pointer;
+            }
+            pointer++;
+            }
+
+        //für jeder dieser 3 variablen berechne ich jetzt den nächsten zug, danach mache Ich den zug, der den
+        //höchsten score gibt!
+
+
+
+        return PromisingMoves.get(moveSelector).getMove();
 
         /*
         MoveResult bestResult = null;
