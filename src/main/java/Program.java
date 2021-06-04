@@ -1,30 +1,28 @@
 import GUI.GUI;
-import ai.ArtificialIntelligent;
-import ai.CleverRandomAI;
-import ai.DeterministicAI;
+import ai.*;
 import game_logic.Game;
 import processing.core.PApplet;
 
 import java.util.Random;
 
-public class Program extends  PApplet{
-    public GUI gui;
+public class Program extends PApplet {
+    public static GUI gui;
     private static Game game;
+
     public static void main(String[] args) {
-         gui = new GUI();
+        gui = new GUI();
         Random r = new Random();
-        //0.16381311 282.0
-        ArtificialIntelligent alice =  new DeterministicAI(r.nextFloat(),r.nextInt(100), r.nextInt(10));
-        ArtificialIntelligent bob = new CleverRandomAI();
-        for(int i=0; i<10;i++)
-        {
+        ArtificialIntelligent alice = new OtherDeterministicAI(r.nextFloat(),r.nextFloat());
+        ArtificialIntelligent bob = new ActuallyAHuman();
+        for (int i = 0; i < 100; i++) {
             game = new Game(alice, bob);
+            gui.setGame(game);
             boolean didWhitewin = game.start();
 
             if (didWhitewin) {
-                bob = new DeterministicAI(r.nextFloat(), r.nextInt(1000),r.nextInt(50));
+                bob = new OtherDeterministicAI( r.nextFloat(), r.nextFloat());
             } else {
-                alice = new DeterministicAI(r.nextFloat(), r.nextInt(1000),r.nextInt(50));
+                alice = new OtherDeterministicAI(r.nextFloat(),r.nextFloat());
             }
         }
         bob.printBestNumbers();
@@ -35,13 +33,12 @@ public class Program extends  PApplet{
         size(800, 800);
     }
 
-        public void setup() {
-            gui.setup(this, game);
-        }
-
-        public void draw() {
-            gui.draw();
-        }
-
+    public void setup() {
+        gui.setup(this, game);
     }
+
+    public void draw() {
+        gui.draw();
+    }
+
 }

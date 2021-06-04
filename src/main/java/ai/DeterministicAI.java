@@ -31,8 +31,8 @@ public class DeterministicAI extends AI
 
     private void addHeuristics(){
         Heuristic maximizeScore = new MaximizeDeltaScoreHeuristic(scoreFactor);
-        Heuristic maximizePossibleMoves = new MaximizeDeltaPosibleMovesHeuristic(scoreFactor);
-        Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(scoreFactor);
+        Heuristic maximizePossibleMoves = new MaximizeDeltaPosibleMovesHeuristic(possibleMovesFactor);
+        Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(areaSizeFactor);
 
         this.addHeuristic(maximizeScore);
         this.addHeuristic(maximizePossibleMoves);
