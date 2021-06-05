@@ -15,8 +15,4 @@ public class PlayerBlack extends Player{
         this.buildings = new ArrayList<Building>(black.buildings);
     }
 
-    @Override
-    public Move getFirstMove() throws Exception {
-        throw new Exception("BLaCK nOt fIrSt mOvE !!!!");
-    }
 }

@@ -66,8 +66,6 @@ public abstract class Player {
         buildings.remove(building);
     }
 
-    public abstract Move getFirstMove() throws Exception;
-
     public Move getNextMove()
     {
         Building building = (isFirstTurn()) ? new Cathedral(): null;

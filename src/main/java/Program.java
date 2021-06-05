@@ -12,7 +12,7 @@ public class Program extends PApplet {
     public static void main(String[] args) {
         gui = new GUI();
         Random r = new Random();
-        ArtificialIntelligent alice = new OtherDeterministicAI(r.nextFloat(),r.nextFloat());
+        ArtificialIntelligent alice = new ActuallyAHuman();
         ArtificialIntelligent bob = new DeterministicAI(r.nextFloat()/10,r.nextInt(1000),r.nextInt(1000));
         for (int i = 0; i < 100; i++) {
             game = new Game(alice, bob);

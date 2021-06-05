@@ -19,15 +19,6 @@ public class CleverRandomAI extends AI {
         return moveList.get(random.nextInt(moveList.size()));
     }
 
-    @Override
-    public Move getFirstMove(Board board, Player player) {
-        Cathedral cathedral = new Cathedral();
-        List<Move> moveList = player.getViableMoves()
-                .stream()
-                .filter(m -> m.getBuilding().equals(cathedral))
-                .collect(Collectors.toList());
-        return moveList.get(random.nextInt(moveList.size()));
-    }
 
     @Override
     public void printBestNumbers() {

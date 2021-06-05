@@ -125,16 +125,6 @@ public class OtherDeterministicAI extends AI
          */
     }
 
-    @Override
-    public Move getFirstMove(Board board, Player player) {
-        Cathedral cathedral = new Cathedral();
-        List<Move> moveList = player.getViableMoves()
-                .stream()
-                .filter(m -> m.getBuilding().equals(cathedral))
-                .collect(Collectors.toList());
-        return moveList.get(random.nextInt(moveList.size()));
-    }
-
     public void printBestNumbers() {
         System.out.println("x2= " + areaSizeFactor + ",x3="+ scoreFactor);
     }

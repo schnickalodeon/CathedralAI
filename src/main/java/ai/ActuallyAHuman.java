@@ -46,11 +46,6 @@ public class ActuallyAHuman extends AI {
     }
 
     @Override
-    public Move getFirstMove(Board board, Player player) {
-        return null;
-    }
-
-    @Override
     public void printBestNumbers() {
         System.out.println("ich.. bin ein mensch!");
 

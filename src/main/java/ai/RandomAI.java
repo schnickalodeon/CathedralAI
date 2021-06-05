@@ -27,14 +27,6 @@ public class RandomAI extends AI {
         return new Move(randomPoint,randomBuilding,randomDirection,player);
     }
 
-    @Override
-    public Move getFirstMove(Board board, Player player) {
-        Point randomPoint = getRandomPoint();
-        Direction randomDirection = getRandomDirection();
-        Building cathedral = new Cathedral();
-
-        return new Move(randomPoint,cathedral,randomDirection,player);
-    }
 
     @Override
     public void printBestNumbers() {

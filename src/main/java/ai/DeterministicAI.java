@@ -51,9 +51,14 @@ public class DeterministicAI extends AI
             List<Building> biggestunused = player.getBiggestBuilding(b -> !triedBuildings.contains(b));
             List<Move> moveList;
             if (biggestunused.size() == 1) {
-                if(biggestunused.get(0).getSize()==6) moveList = player.generateValidMoves(biggestunused);
-                else{moveList = player.generateValidMoves(player.getBuildings());}
-            } else {
+                if(biggestunused.get(0).getSize()==6) {
+                    moveList = player.generateValidMoves(biggestunused);
+                }
+                else{
+                    moveList = player.generateValidMoves(player.getBuildings());
+                }
+            }
+            else {
                 moveList = player.generateValidMoves(player.getBuildings());
             }
             nextMove = determineBestMove(moveList, player);
@@ -65,11 +70,6 @@ public class DeterministicAI extends AI
         return nextMove;
     }
 
-    //Schauen uns für die n vielversprechendsten züge die "nächsten" m moves von uns an.
-    //wobei n,m ausprobiert werden muss.
-    //sind die metriken zu stark??
-
-    //Versuche anzahl der unspielbaren punkte des gegners maximieren.
 
     private Move determineBestMove(List<Move> possibleMoveList, Player player) {
 
@@ -105,31 +105,6 @@ public class DeterministicAI extends AI
 
         return PromisingMoves.get(moveSelector).getMove();
 
-        /*
-        MoveResult bestResult = null;
-        Heuristic michelsSuperHeuristic = new MichelsSuperHeuristic(player,x1,x2,x3, possibleMoveList);
-        //Heurisic terkjkafsj = new MA();
-        //
-
-
-        List<MoveResult> moves = michelsSuperHeuristic.evaluate();
-
-        Optional<MoveResult> first = moves.stream().findFirst();
-        bestResult = first.isPresent() ? first.get() : null;
-
-        return bestResult.getMove();
-
-         */
-    }
-
-    @Override
-    public Move getFirstMove(Board board, Player player) {
-        Cathedral cathedral = new Cathedral();
-        List<Move> moveList = player.getViableMoves()
-                .stream()
-                .filter(m -> m.getBuilding().equals(cathedral))
-                .collect(Collectors.toList());
-        return moveList.get(random.nextInt(moveList.size()));
     }
 
     public void printBestNumbers() {

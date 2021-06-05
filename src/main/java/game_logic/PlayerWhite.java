@@ -15,11 +15,4 @@ public class PlayerWhite extends Player {
         this.buildings = new ArrayList<Building>(white.buildings);
     }
 
-    public Move getFirstMove(){
-        return artificialIntelligent.getFirstMove(game.getBoard(),this);
-    }
-
-
-
-
 }
