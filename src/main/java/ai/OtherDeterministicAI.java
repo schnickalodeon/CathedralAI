@@ -112,6 +112,9 @@ public class OtherDeterministicAI extends AI {
             }
         }
 
+        end = ZonedDateTime.now();
+        System.out.println("Time to calculate move:" + ChronoUnit.SECONDS.between(start,end));
+
         return getBestMoveFromFutures(tmpValues);
 
     }
