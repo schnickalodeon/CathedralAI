@@ -33,11 +33,15 @@ public class Game {
 
 
 
-    public Game(ArtificialIntelligent artificialIntelligentWhite, ArtificialIntelligent artificialIntelligentBlack) {
+    public Game(ArtificialIntelligent artificialIntelligentWhite, ArtificialIntelligent artificialIntelligentBlack, GUI gui) {
         this.board = new Board(this);
         this.white = new PlayerWhite("Alice", this, artificialIntelligentWhite);
         this.black = new PlayerBlack("Bob", this, artificialIntelligentBlack);
         this.isFinished = false;
+        while(this.gui==null) {
+            this.gui = gui;
+        }
+        gui.setGame(this);
     }
     public Game(Game game)
     {
@@ -169,7 +173,6 @@ public class Game {
         }
 
 
-        //TODO processing frontend for manual play
     }
 
     public void setGUI (GUI gui){

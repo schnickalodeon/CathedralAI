@@ -25,8 +25,10 @@ public class ActuallyAHuman extends AI {
         d = Direction.getDirectionByValue(directionPointer);
         b = player.getBuildings().get(buildingPointer);
 
-        gui = player.getGame().getGui();
-        p = gui.getProcessing();
+        while (p==null) {
+            gui = player.getGame().getGui();
+            p = gui.getProcessing();
+        }
 
         while (true) {
             gui.playerHoveringBuilding(b.getShape(d), Position);
@@ -35,7 +37,6 @@ public class ActuallyAHuman extends AI {
             buildingPointer = gui.selectBuilding(buildingPointer,player.getBuildings().size());
             d = Direction.getDirectionByValue(directionPointer);
             b = player.getBuildings().get(buildingPointer);
-
             if (p.keyPressed && p.keyCode == p.ENTER) {
                 Move m = new Move(Position, b, d, player);
                 if (player.isPlaceable(m)) {

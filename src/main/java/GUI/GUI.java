@@ -25,56 +25,59 @@ public class GUI {
     public void setup(PApplet p, Game game) {
         processing = p;
         p.frameRate(1);
-        setGame(game);
     }
 
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public void setPlayers(Game game) {
         Playerblack = game.getBlack();
         PlayerWhite = game.getWhite();
-        game.setGUI(this);
     }
 
 
     public void draw() {
-        loop = true;
-        processing.background(0xf5,0xE1, 0xC8);
-        processing.fill(0xff);
-        processing.textSize(20);
-        processing.text("black:" + Playerblack.countPoints() + " White:" + PlayerWhite.countPoints(), 20, 20);
-        int squareSize = ((processing.width - 200) / 10);
-        for (int i = 0; i < 100; i++) {
-            int content = game.getBoard().getContent(i).getValue();
-            switch (content) {
-                case 0 -> {
-                    processing.fill(0xED, 0xE2, 0xBF);
+        if (game != null) {
+            loop = true;
+            processing.background(0xf5, 0xE1, 0xC8);
+            processing.fill(0xff);
+            processing.textSize(20);
+            processing.text("black:" + Playerblack.countPoints() + " White:" + PlayerWhite.countPoints(), 20, 20);
+            int squareSize = ((processing.width - 200) / 10);
+            for (int i = 0; i < 100; i++) {
+                int content = game.getBoard().getContent(i).getValue();
+                switch (content) {
+                    case 0 -> {
+                        processing.fill(0xED, 0xE2, 0xBF);
+                    }
+                    case 1 -> {
+                        processing.fill(0x93, 0x73, 0x4A);
+                    }
+                    case 2 -> {
+                        processing.fill(0xff);
+                    }
+                    case 3 -> {
+                        processing.fill(0x0F, 0x0F, 0x0F, 200);
+                    }
+                    case 4 -> {
+                        processing.fill(0xAA);
+                    }
+                    case 5 -> {
+                        processing.fill(0x22);
+                    }
+                    default -> {
+                    }
                 }
-                case 1 -> {
-                    processing.fill(0x93,0x73,0x4A);
-                }
-                case 2 -> {
-                    processing.fill(0xff);
-                }
-                case 3 -> {
-                    processing.fill(0x0F, 0x0F,0x0F, 200);
-                }
-                case 4 -> {
-                    processing.fill(0xAA);
-                }
-                case 5 -> {
-                    processing.fill(0x22);
-                }
-                default -> {
-                }
-            }
-            processing.strokeWeight(1f);
-            processing.stroke(0x4B,0x21,0x01 );
+                processing.strokeWeight(1f);
+                processing.stroke(0x4B, 0x21, 0x01);
 
-            processing.square(i % 10 * squareSize, 200 + i / 10 * squareSize, squareSize);
-        }
-        processing.fill(0, 0, 0xff);
-        for (Point p : PlayerHover) {
-            processing.square((p.x + playerPos.x) * squareSize, 200 + (p.y + playerPos.y) * squareSize, squareSize);
+                processing.square(i % 10 * squareSize, 200 + i / 10 * squareSize, squareSize);
+            }
+            processing.fill(0, 0, 0xff);
+            for (Point p : PlayerHover) {
+                processing.square((p.x + playerPos.x) * squareSize, 200 + (p.y + playerPos.y) * squareSize, squareSize);
+            }
         }
     }
 
@@ -140,13 +143,14 @@ public class GUI {
     }
 
     public int selectBuilding(int buildingPointer, int listSize) {
+        if (processing == null) return buildingPointer;
         if (processing.keyPressed && processing.key == 'Y' || processing.keyPressed && processing.key == 'y') {
             loop = false;
             if (++buildingPointer >= listSize) return 0;
         }
         if (processing.keyPressed && processing.key == 'X' || processing.keyPressed && processing.key == 'x') {
             loop = false;
-            if (--buildingPointer < 0) return listSize -1;
+            if (--buildingPointer < 0) return listSize - 1;
         }
         return buildingPointer;
     }

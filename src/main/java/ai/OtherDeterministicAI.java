@@ -4,31 +4,34 @@ import ai.heuristic.*;
 import game_logic.*;
 import game_logic.buildings.Cathedral;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
+
 /* Heuristiken:
  *
  * -> Summe der Punkte, die man durch das Setzen der züge erreicht minimieren
  * Maximierung von gebiet eingenommen, wenn möglich.
  *
  */
-public class OtherDeterministicAI extends AI
-{
+public class OtherDeterministicAI extends AI {
 
     float areaSizeFactor;
     float scoreFactor;
 
     private static final Random random = new Random();
 
-    public OtherDeterministicAI( float x2, float x3) {
+    public OtherDeterministicAI(float x2, float x3) {
         this.areaSizeFactor = x2;
         this.scoreFactor = x3;
         addHeuristics();
     }
 
-    private void addHeuristics(){
+    private void addHeuristics() {
         Heuristic maximizeScore = new MaximizeDeltaScoreHeuristic(scoreFactor);
         Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(areaSizeFactor);
 
@@ -39,8 +42,7 @@ public class OtherDeterministicAI extends AI
 
 
     @Override
-    public Move getMove(Board board, Player player)
-    {
+    public Move getMove(Board board, Player player) {
         //Wir wollen optimieren für delta anzahlzüge in 3 zügen zukunft.
         Move nextMove;
         List<Building> triedBuildings = new ArrayList<>();
@@ -49,8 +51,10 @@ public class OtherDeterministicAI extends AI
             List<Building> biggestunused = player.getBiggestBuilding(b -> !triedBuildings.contains(b));
             List<Move> moveList;
             if (biggestunused.size() == 1) {
-                if(biggestunused.get(0).getSize()==6) moveList = player.generateValidMoves(biggestunused);
-                else{moveList = player.generateValidMoves(player.getBuildings());}
+                if (biggestunused.get(0).getSize() == 6) moveList = player.generateValidMoves(biggestunused);
+                else {
+                    moveList = player.generateValidMoves(player.getBuildings());
+                }
             } else {
                 moveList = player.generateValidMoves(player.getBuildings());
             }
@@ -70,43 +74,50 @@ public class OtherDeterministicAI extends AI
     //Versuche anzahl der unspielbaren punkte des gegners maximieren.
 
     private Move determineBestMove(List<Move> possibleMoveList, Player player) {
-        List<MoveResult> PromisingMoves;
-        PromisingMoves = this.getBestMove(possibleMoveList, player.getGame(),(possibleMoveList.size()/3)>100?100:possibleMoveList.size()/3);
+        List<MoveResult> promisingMoves;
 
+        ZonedDateTime start;
+        ZonedDateTime end;
+        ZonedDateTime iterationStart;
+        ZonedDateTime iterationEnd;
 
-        List<Float> allTheGoodMoves = new ArrayList<>();
-        int moveSelector=0;
+        int moveSelector = 0;
         float moveScore = 0;
-        int pointer=0;
-        for (MoveResult m : PromisingMoves) {
-            if (m != null) {
-                Game test = new Game(player.getGame());
-                test.getActivePlayer().makeMove(m.getMove());
-                test.getActivePlayer().removeBuildiung(m.getMove().getBuilding());
-                List<MoveResult> listOfGoodMoves;
-                listOfGoodMoves = this.getBestMove(test.getActivePlayer().generateValidMoves(test.getActivePlayer().getBuildings()), test,3);
-                float sum = 0;
-                int noNullCounter =0;
-                for (MoveResult mr : listOfGoodMoves) {
-                    if (mr != null)
-                        sum += mr.getScore();
-                    noNullCounter ++;
-                }
-                sum /= noNullCounter;
-                if (moveScore < sum) {
-                    moveScore = sum;
-                    moveSelector = pointer;
-                }
-                pointer++;
+        int pointer = 0;
+
+        //wir holen 100 moves, von allen moves, alle moves müssen berechnet werden. dauert nicht lange!
+        promisingMoves = this.getBestMove(possibleMoveList, player.getGame(), 100);
+
+
+        List<Integer> loopTimes = new ArrayList<>();
+        List<Future<MoveResult>> tmpValues = null;
+        start = ZonedDateTime.now();
+        ExecutorService service = Executors.newFixedThreadPool(100);
+        List<Callable<MoveResult>> threads = new ArrayList<>();
+        for (MoveResult m : promisingMoves.stream().filter(m -> m != null).collect(Collectors.toList())) {
+            threads.add(new DeterministicThreading(this, player.getGame(), m));
+        }
+        try {
+            tmpValues = service.invokeAll(threads);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        int i = 0;
+        while (i < 100) {
+            if (tmpValues.get(i).isDone()) {
+                i++;
             }
         }
+
+        return getBestMoveFromFutures(tmpValues);
 
         //für jeder dieser 3 variablen berechne ich jetzt den nächsten zug, danach mache Ich den zug, der den
         //höchsten score gibt!
 
 
 
-        return PromisingMoves.get(moveSelector).getMove();
 
         /*
         MoveResult bestResult = null;
@@ -125,7 +136,19 @@ public class OtherDeterministicAI extends AI
          */
     }
 
+    private Move getBestMoveFromFutures(List<Future<MoveResult>> tmpValues) {
+        tmpValues.stream().max((m1,m2) -> {
+            try {
+                return Float.compare(m1.get().getScore(),m2.get().getScore());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }).get().get().getMove();
+    }
+
     public void printBestNumbers() {
-        System.out.println("x2= " + areaSizeFactor + ",x3="+ scoreFactor);
+        System.out.println("x2= " + areaSizeFactor + ",x3=" + scoreFactor);
     }
 }
