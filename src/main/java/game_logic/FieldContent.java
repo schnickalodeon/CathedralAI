@@ -18,6 +18,10 @@ public enum FieldContent {
         this.value = value;
     }
 
+    public byte getValue() {
+        return value;
+    }
+
     public static FieldContent getOccupiedByPlayer(PlayerColor color){
         switch (color){
             case BLACK -> { return FieldContent.BLACK_OCCUPIED; }

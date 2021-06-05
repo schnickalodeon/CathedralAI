@@ -6,6 +6,7 @@ import ai.heuristic.MoveResult;
 import game_logic.Game;
 import game_logic.Move;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,9 +17,9 @@ public abstract class AI implements ArtificialIntelligent {
         heuristics.add(heuristic);
     }
 
-    protected Move getBestMove(List<Move> possibleMoves, Game game){
+    protected List<MoveResult> getBestMove(List<Move> possibleMoves, Game game, int numResults){
         List<MoveResult> results = new ArrayList<>();
-        Move bestMove = null;
+        List<MoveResult> bestMove = new ArrayList<>();
 
         possibleMoves.forEach(m -> {
             float score = calculateScore(m, game);
@@ -27,8 +28,10 @@ public abstract class AI implements ArtificialIntelligent {
 
         results.sort((r1, r2) -> r2.getScore().compareTo(r1.getScore()));
 
-        bestMove = !results.isEmpty() ? results.get(0).getMove() : null;
-
+        for (int i=0; i< numResults; i++)
+        {
+            bestMove.add(results.size() >= i+1? results.get(i):null);
+        }
         return bestMove;
     }
 
@@ -38,6 +41,7 @@ public abstract class AI implements ArtificialIntelligent {
         float score = 0;
         for(Heuristic h: heuristics){
             MoveResult result = h.evaluate(move, game);
+
             score += result.getScore();
         };
 

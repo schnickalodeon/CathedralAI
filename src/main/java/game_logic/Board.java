@@ -122,7 +122,6 @@ public class Board
         emptyFieldCount = emptyFields.size();
 
 
-        //todo Datenstruktur area erstellen
         ArrayList<Area> listOfAreas = new ArrayList<>();
 
         for (Point p: emptyFields)

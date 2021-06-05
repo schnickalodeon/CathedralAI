@@ -33,6 +33,7 @@ public abstract class Heuristic implements Heuristicable {
     public MoveResult evaluate(Move move, Game game){
         testGame = new Game(game);
         testGame.getActivePlayer().makeMove(move);
+        testGame.getBoard().checkArea(testGame.getActivePlayer().getColor());
         float score =  calculateScore(move);
         return new MoveResult(move,score);
     }

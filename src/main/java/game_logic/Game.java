@@ -1,5 +1,6 @@
 package game_logic;
 
+import GUI.GUI;
 import ai.ArtificialIntelligent;
 
 import java.io.FileWriter;
@@ -24,6 +25,7 @@ public class Game {
     private ZonedDateTime end;
 
     private ArrayList<Move> moves = new ArrayList<>();
+    private GUI gui;
 
     public int getTurnNumber(){ return turnNumber; }
     public ArrayList<Move> getPreviousMoves(){return moves;}
@@ -70,14 +72,14 @@ public class Game {
     }
 
     public void turn(){
-        LocalTime startTurn = LocalTime.now();
+        //LocalTime startTurn = LocalTime.now();
         Player player = getActivePlayer();
-        LocalTime bufferStart;
+        //LocalTime bufferStart;
         boolean wasSuccessful;
         do {
 
             Move move = player.getNextMove();
-            bufferStart = null;
+/*          bufferStart = null;
             long timeElapsed = startTurn.until(LocalTime.now(), ChronoUnit.SECONDS);
             if(timeElapsed >= TURN_MAX_TIME)
             {
@@ -87,7 +89,7 @@ public class Game {
                     break;
                 }
                 bufferStart = LocalTime.now();
-            }
+            }*/
 
             if (move == null)
             {
@@ -102,10 +104,10 @@ public class Game {
                 }
 
                 board.checkArea(move.getPlayer().getColor());
-                if(bufferStart != null){
+                /*if(bufferStart != null){
                     long bufferUsed = bufferStart.until(LocalTime.now(),ChronoUnit.SECONDS);
                     player.reduceBuffer(bufferUsed);
-                }
+                }*/
 
                 moves.add(move);
                 appendGameFile();
@@ -169,4 +171,12 @@ public class Game {
 
         //TODO processing frontend for manual play
     }
+
+    public void setGUI (GUI gui){
+        this.gui = gui;
+    }
+    public GUI getGui(){return gui;}
+
+    public Player getWhite(){return white; }
+    public Player getBlack(){return black;}
 }

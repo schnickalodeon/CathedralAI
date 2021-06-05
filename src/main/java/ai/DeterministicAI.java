@@ -31,8 +31,8 @@ public class DeterministicAI extends AI
 
     private void addHeuristics(){
         Heuristic maximizeScore = new MaximizeDeltaScoreHeuristic(scoreFactor);
-        Heuristic maximizePossibleMoves = new MaximizeDeltaPosibleMovesHeuristic(scoreFactor);
-        Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(scoreFactor);
+        Heuristic maximizePossibleMoves = new MaximizeDeltaPosibleMovesHeuristic(possibleMovesFactor);
+        Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(areaSizeFactor);
 
         this.addHeuristic(maximizeScore);
         this.addHeuristic(maximizePossibleMoves);
@@ -73,7 +73,37 @@ public class DeterministicAI extends AI
 
     private Move determineBestMove(List<Move> possibleMoveList, Player player) {
 
-        return this.getBestMove(possibleMoveList, player.getGame());
+        List<MoveResult> PromisingMoves;
+        PromisingMoves = this.getBestMove(possibleMoveList, player.getGame(),3);
+
+        List<Float> allTheGoodMoves = new ArrayList<>();
+        int moveSelector=0;
+        float moveScore = 0;
+        int pointer=0;
+        for (MoveResult m : PromisingMoves) {
+            if (m != null) {
+                Game test = new Game(player.getGame());
+                test.getActivePlayer().makeMove(m.getMove());
+                test.getActivePlayer().removeBuildiung(m.getMove().getBuilding());
+                List<MoveResult> listOfGoodMoves;
+                listOfGoodMoves = this.getBestMove(test.getActivePlayer().generateValidMoves(test.getActivePlayer().getBuildings()), test,3);
+                float sum = 0;
+                int notNullCounter=0;
+                for (MoveResult mr : listOfGoodMoves) {
+                    if (mr != null)
+                        sum += mr.getScore();
+                    notNullCounter++;
+                }
+                sum /= notNullCounter;
+                if (moveScore < sum) {
+                    moveScore = sum;
+                    moveSelector = pointer;
+                }
+                pointer++;
+            }
+        }
+
+        return PromisingMoves.get(moveSelector).getMove();
 
         /*
         MoveResult bestResult = null;
