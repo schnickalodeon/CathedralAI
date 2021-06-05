@@ -38,7 +38,7 @@ public class GUI {
 
     public void draw() {
         loop = true;
-        processing.background(0xff, 0, 0);
+        processing.background(0xf5,0xE1, 0xC8);
         processing.fill(0xff);
         processing.textSize(20);
         processing.text("black:" + Playerblack.countPoints() + " White:" + PlayerWhite.countPoints(), 20, 20);
@@ -47,16 +47,16 @@ public class GUI {
             int content = game.getBoard().getContent(i).getValue();
             switch (content) {
                 case 0 -> {
-                    processing.fill(0xff, 0x00, 0xff);
+                    processing.fill(0xED, 0xE2, 0xBF);
                 }
                 case 1 -> {
-                    processing.fill(0, 0, 0xff);
+                    processing.fill(0x93,0x73,0x4A);
                 }
                 case 2 -> {
                     processing.fill(0xff);
                 }
                 case 3 -> {
-                    processing.fill(0x00);
+                    processing.fill(0x0F, 0x0F,0x0F, 200);
                 }
                 case 4 -> {
                     processing.fill(0xAA);
@@ -67,6 +67,9 @@ public class GUI {
                 default -> {
                 }
             }
+            processing.strokeWeight(1f);
+            processing.stroke(0x4B,0x21,0x01 );
+
             processing.square(i % 10 * squareSize, 200 + i / 10 * squareSize, squareSize);
         }
         processing.fill(0, 0, 0xff);

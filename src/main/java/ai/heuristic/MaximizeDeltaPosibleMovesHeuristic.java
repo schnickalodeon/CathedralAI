@@ -19,7 +19,7 @@ public class MaximizeDeltaPosibleMovesHeuristic extends Heuristic {
         int ourPossibleNextMoves = calculatePossibleNextMoves(testGame.getActivePlayer());
         int opponentPossibleNextMoves = calculatePossibleNextMoves(testGame.getInactivePlayer());
 
-        return (ourPossibleNextMoves - opponentPossibleNextMoves) * factor;
+        return (ourPossibleNextMoves - opponentPossibleNextMoves) * factor*factor*factor;
     }
 
     private int calculatePossibleNextMoves(Player player){

@@ -17,7 +17,7 @@ public abstract class AI implements ArtificialIntelligent {
         heuristics.add(heuristic);
     }
 
-    protected List<MoveResult> getBestMove(List<Move> possibleMoves, Game game){
+    protected List<MoveResult> getBestMove(List<Move> possibleMoves, Game game, int numResults){
         List<MoveResult> results = new ArrayList<>();
         List<MoveResult> bestMove = new ArrayList<>();
 
@@ -28,9 +28,10 @@ public abstract class AI implements ArtificialIntelligent {
 
         results.sort((r1, r2) -> r2.getScore().compareTo(r1.getScore()));
 
-        bestMove.add( !results.isEmpty() ? results.get(0) : null);
-        bestMove.add (results.size()>=2 ? results.get(1) : null);
-        bestMove.add (results.size()>=3 ? results.get(2) : null);
+        for (int i=0; i< numResults; i++)
+        {
+            bestMove.add(results.size() >= i+1? results.get(i):null);
+        }
         return bestMove;
     }
 

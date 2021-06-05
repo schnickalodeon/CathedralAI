@@ -7,14 +7,12 @@ import processing.core.PApplet;
 
 import java.awt.*;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 public class ActuallyAHuman extends AI {
     Point Position;
     Building b;
     Direction d;
-    Random r = new Random();
     GUI gui;
     PApplet p;
 
