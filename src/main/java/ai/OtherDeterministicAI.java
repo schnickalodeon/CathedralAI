@@ -8,6 +8,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -113,39 +114,29 @@ public class OtherDeterministicAI extends AI {
 
         return getBestMoveFromFutures(tmpValues);
 
-        //für jeder dieser 3 variablen berechne ich jetzt den nächsten zug, danach mache Ich den zug, der den
-        //höchsten score gibt!
-
-
-
-
-        /*
-        MoveResult bestResult = null;
-        Heuristic michelsSuperHeuristic = new MichelsSuperHeuristic(player,x1,x2,x3, possibleMoveList);
-        //Heurisic terkjkafsj = new MA();
-        //
-
-
-        List<MoveResult> moves = michelsSuperHeuristic.evaluate();
-
-        Optional<MoveResult> first = moves.stream().findFirst();
-        bestResult = first.isPresent() ? first.get() : null;
-
-        return bestResult.getMove();
-
-         */
     }
 
     private Move getBestMoveFromFutures(List<Future<MoveResult>> tmpValues) {
-        tmpValues.stream().max((m1,m2) -> {
+        List<MoveResult> results = getResultsFromFuture(tmpValues);
+
+        Optional<MoveResult> bestMoveResult = results.stream().max(MoveResult::compareTo);
+        return bestMoveResult.isPresent() ? bestMoveResult.get().getMove() : null;
+    }
+
+    private List<MoveResult> getResultsFromFuture(List<Future<MoveResult>> tmpValues){
+        List<MoveResult> result = tmpValues.stream().map(future -> {
             try {
-                return Float.compare(m1.get().getScore(),m2.get().getScore());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                return future.get();
+            } catch (InterruptedException exception) {
+                exception.printStackTrace();
+                return null;
             } catch (ExecutionException e) {
                 e.printStackTrace();
+                return null;
             }
-        }).get().get().getMove();
+        }).collect(Collectors.toList());
+
+        return result;
     }
 
     public void printBestNumbers() {
