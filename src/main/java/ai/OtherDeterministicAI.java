@@ -1,3 +1,4 @@
+
 package ai;
 
 import ai.heuristic.*;
@@ -79,13 +80,6 @@ public class OtherDeterministicAI extends AI {
 
         ZonedDateTime start;
         ZonedDateTime end;
-        ZonedDateTime iterationStart;
-        ZonedDateTime iterationEnd;
-
-        int moveSelector = 0;
-        float moveScore = 0;
-        int pointer = 0;
-
         //wir holen 100 moves, von allen moves, alle moves müssen berechnet werden. dauert nicht lange!
         promisingMoves = this.getBestMove(possibleMoveList, player.getGame(), 100);
 
@@ -95,26 +89,22 @@ public class OtherDeterministicAI extends AI {
         start = ZonedDateTime.now();
         ExecutorService service = Executors.newFixedThreadPool(100);
         List<Callable<MoveResult>> threads = new ArrayList<>();
-        for (MoveResult m : promisingMoves.stream().filter(m -> m != null).collect(Collectors.toList())) {
+        List<MoveResult>PromisingNonNullMoves = promisingMoves.stream().filter(m -> m != null).collect(Collectors.toList());
+        for (MoveResult m : PromisingNonNullMoves) {
             threads.add(new DeterministicThreading(this, player.getGame(), m));
         }
         try {
             tmpValues = service.invokeAll(threads);
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         int i = 0;
-        while (i < 100) {
+        while (i < promisingMoves.size()) {
             if (tmpValues.get(i).isDone()) {
                 i++;
             }
         }
-
-        end = ZonedDateTime.now();
-        System.out.println("Time to calculate move:" + ChronoUnit.SECONDS.between(start,end));
-
         return getBestMoveFromFutures(tmpValues);
 
     }
