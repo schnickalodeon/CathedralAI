@@ -4,24 +4,25 @@ import ai.heuristic.MoveResult;
 import game_logic.Game;
 import game_logic.Move;
 
+import javax.print.attribute.standard.MediaSize;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
-public class DeterministicThreading implements Callable {
+public class DeterministicThreading implements Callable<MoveResult> {
 
     private Game test;
     MoveResult m;
     AI ai;
 
     DeterministicThreading(AI ai, Game game, MoveResult m) {
-        this.ai = ai;
+        this.ai = new OtherDeterministicAI((OtherDeterministicAI)ai);
         this.test = new Game(game);
         this.m = m;
     }
 
     @Override
-    public Object call() throws Exception {
+    public MoveResult call() throws Exception {
         test.getActivePlayer().makeMove(m.getMove());
         test.getActivePlayer().removeBuildiung(m.getMove().getBuilding());
 

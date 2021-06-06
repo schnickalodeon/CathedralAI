@@ -22,8 +22,17 @@ import java.util.stream.Collectors;
  */
 public class OtherDeterministicAI extends AI {
 
-    float areaSizeFactor;
-    float scoreFactor;
+    public float getAreaSizeFactor() {
+        return areaSizeFactor;
+    }
+
+   private float areaSizeFactor;
+
+    public float getScoreFactor() {
+        return scoreFactor;
+    }
+
+    private float scoreFactor;
 
     private static final Random random = new Random();
 
@@ -31,6 +40,12 @@ public class OtherDeterministicAI extends AI {
         this.areaSizeFactor = x2;
         this.scoreFactor = x3;
         addHeuristics();
+    }
+
+    public OtherDeterministicAI(OtherDeterministicAI ai) {
+       this.areaSizeFactor = ai.getAreaSizeFactor();
+       this.scoreFactor = ai.getScoreFactor();
+       addHeuristics();
     }
 
     private void addHeuristics() {
@@ -84,9 +99,7 @@ public class OtherDeterministicAI extends AI {
         promisingMoves = this.getBestMove(possibleMoveList, player.getGame(), 100);
 
 
-        List<Integer> loopTimes = new ArrayList<>();
         List<Future<MoveResult>> tmpValues = null;
-        start = ZonedDateTime.now();
         ExecutorService service = Executors.newFixedThreadPool(100);
         List<Callable<MoveResult>> threads = new ArrayList<>();
         List<MoveResult>PromisingNonNullMoves = promisingMoves.stream().filter(m -> m != null).collect(Collectors.toList());
@@ -111,9 +124,8 @@ public class OtherDeterministicAI extends AI {
 
     private Move getBestMoveFromFutures(List<Future<MoveResult>> tmpValues) {
         List<MoveResult> results = getResultsFromFuture(tmpValues);
-
         Optional<MoveResult> bestMoveResult = results.stream().max(MoveResult::compareTo);
-        return bestMoveResult.isPresent() ? bestMoveResult.get().getMove() : null;
+        return bestMoveResult.map(MoveResult::getMove).orElse(null);
     }
 
     private List<MoveResult> getResultsFromFuture(List<Future<MoveResult>> tmpValues){
