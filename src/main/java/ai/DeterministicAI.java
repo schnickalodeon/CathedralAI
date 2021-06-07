@@ -85,6 +85,7 @@ public class DeterministicAI extends AI
                 Game test = new Game(player.getGame());
                 test.getActivePlayer().makeMove(m.getMove());
                 test.getActivePlayer().removeBuildiung(m.getMove().getBuilding());
+                test.getBoard().checkArea(test.getActivePlayer().getColor());
                 List<MoveResult> listOfGoodMoves;
                 listOfGoodMoves = this.getBestMove(test.getActivePlayer().generateValidMoves(test.getActivePlayer().getBuildings()), test,3);
                 float sum = 0;

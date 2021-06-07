@@ -13,7 +13,10 @@ public class Area
 
     public Area(ArrayList<Point> points_, int reachbleEmptyFieldCount)
     {
-        points = points_;
+        points = new ArrayList<>();
+        for(Point p: points_) {
+            points.add(new Point(p.x, p.y));
+        }
         numFields = reachbleEmptyFieldCount;
     }
 

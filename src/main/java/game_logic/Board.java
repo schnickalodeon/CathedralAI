@@ -134,7 +134,7 @@ public class Board
             reachableFromPoint.clear();
 
             reachbleEmptyFieldCount= getReachableFields(color,p, reachableFromPoint, 0);
-            Area reachableEmptyArea = new Area(reachableFromPoint, reachbleEmptyFieldCount);
+            Area reachableEmptyArea = new Area(new ArrayList<>(reachableFromPoint), reachbleEmptyFieldCount);
             boolean nothingToConquer = reachableEmptyArea.getAreaSize() == emptyFieldCount;
             if(nothingToConquer)
             {
@@ -152,7 +152,6 @@ public class Board
     {
         //gibt es bereits einen Punkt auf den ich mich beziehe? haben wir bereits eine Area erkannt?
             if (listOfAreas.size() > 0) {
-
                 //wenn sie keinen gemeinsamen punkt haben dann:
                 if (!listOfAreas.get(0).getArea().contains(newArea.getArea().get(0)))
                 {
@@ -286,8 +285,8 @@ public class Board
         int capturedCount =0;
         for (FieldContent f : content)
         {
-            if (color == PlayerColor.BLACK&& f==FieldContent.BLACK_TERRITORY
-                    || color==PlayerColor.WHITE && f==FieldContent.WHITE_TERRITORY) capturedCount++;
+            if (color == PlayerColor.BLACK && f==FieldContent.BLACK_TERRITORY
+                    || color==PlayerColor.WHITE && f== FieldContent.WHITE_TERRITORY) capturedCount++;
         }
         return capturedCount;
     }

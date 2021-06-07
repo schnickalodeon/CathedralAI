@@ -41,9 +41,8 @@ public abstract class AI implements ArtificialIntelligent {
         float score = 0;
         for(Heuristic h: heuristics){
             MoveResult result = h.evaluate(move, game);
-
             score += result.getScore();
-        };
+        }
 
         return score;
     }

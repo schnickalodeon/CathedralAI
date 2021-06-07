@@ -43,6 +43,7 @@ public class Game {
         }
         gui.setGame(this);
     }
+
     public Game(Game game)
     {
         this.board = new Board(game.board, this);

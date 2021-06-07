@@ -50,7 +50,7 @@ public class OtherDeterministicAI extends AI {
 
     private void addHeuristics() {
         Heuristic maximizeScore = new MaximizeDeltaScoreHeuristic(scoreFactor);
-        Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(areaSizeFactor);
+        Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(areaSizeFactor*100);
 
 
         this.addHeuristic(maximizeScore);
@@ -100,7 +100,7 @@ public class OtherDeterministicAI extends AI {
 
 
         List<Future<MoveResult>> tmpValues = null;
-        ExecutorService service = Executors.newFixedThreadPool(100);
+        ExecutorService service = Executors.newFixedThreadPool(20);
         List<Callable<MoveResult>> threads = new ArrayList<>();
         List<MoveResult>PromisingNonNullMoves = promisingMoves.stream().filter(m -> m != null).collect(Collectors.toList());
         for (MoveResult m : PromisingNonNullMoves) {
@@ -113,11 +113,11 @@ public class OtherDeterministicAI extends AI {
         }
 
         int i = 0;
-        while (i < promisingMoves.size()) {
+        do {
             if (tmpValues.get(i).isDone()) {
                 i++;
             }
-        }
+        }while (i < tmpValues.size());
         return getBestMoveFromFutures(tmpValues);
 
     }

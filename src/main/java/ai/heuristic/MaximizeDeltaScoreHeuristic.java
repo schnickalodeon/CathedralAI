@@ -18,7 +18,7 @@ public class MaximizeDeltaScoreHeuristic extends Heuristic {
         int ourScore = getScore(testGame.getActivePlayer());
         int opponentScore = getScore(testGame.getInactivePlayer());
 
-        return (opponentScore - (ourScore-move.getBuilding().getSize())) * factor * factor;
+        return (opponentScore - (ourScore-move.getBuilding().getSize())) * factor;
     }
 
     private int getScore(Player player){

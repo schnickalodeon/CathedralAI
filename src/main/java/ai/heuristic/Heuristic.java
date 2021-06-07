@@ -22,7 +22,7 @@ public abstract class Heuristic implements Heuristicable {
         for(Move m: moves){
             testGame = new Game(game);
             testGame.getActivePlayer().makeMove(m);
-            testGame.getBoard().checkArea(testGame.getActivePlayer().getColor());
+            testGame.getBoard().checkArea(m.getPlayer().getColor());
             float score =  calculateScore(m);
             MoveResult result = new MoveResult(m,score);
             results.add(result);
@@ -33,7 +33,7 @@ public abstract class Heuristic implements Heuristicable {
     public MoveResult evaluate(Move move, Game game){
         testGame = new Game(game);
         testGame.getActivePlayer().makeMove(move);
-        testGame.getBoard().checkArea(testGame.getActivePlayer().getColor());
+        testGame.getBoard().checkArea(move.getPlayer().getColor());
         float score =  calculateScore(move);
         return new MoveResult(move,score);
     }

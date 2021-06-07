@@ -15,9 +15,7 @@ public class MaximizeDeltaAreasizeHeuristic extends Heuristic {
     @Override
     protected float calculateScore(Move move) {
         int ourCapturedAreaSize = calculateCapturedArea(testGame.getActivePlayer());
-        int opponentCapturedAreaSize = calculateCapturedArea(testGame.getInactivePlayer());
-
-        return (ourCapturedAreaSize - opponentCapturedAreaSize) * factor * factor;
+        return (ourCapturedAreaSize) * factor;
     }
 
     private int calculateCapturedArea(Player player){

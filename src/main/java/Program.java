@@ -13,9 +13,9 @@ public class Program extends PApplet {
         gui = new GUI();
         Random r = new Random();
         ArtificialIntelligent alice = new ActuallyAHuman();
-        ArtificialIntelligent bob = new OtherDeterministicAI(r.nextInt(1000),r.nextInt(1000));
+        ArtificialIntelligent bob = new OtherDeterministicAI(r.nextFloat(),r.nextFloat());
         for (int i = 0; i < 100; i++) {
-            game = new Game(alice, bob, gui);
+            game = new Game(bob, alice, gui);
             gui.setPlayers(game);
             boolean didWhitewin = game.start();
 
