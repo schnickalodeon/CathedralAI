@@ -3,8 +3,8 @@ package game_logic;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.IntStream;
 
 
@@ -26,114 +26,31 @@ public class Board {
     }
 
 
-    public void setContent(List<Point> points, FieldContent content) {
-        points.forEach(p -> {
-            int index = getIndexByPoint(p);
-            this.content[index] = content;
-        });
-    }
-
-    public void setContent(Point point, FieldContent content) {
-        int index = getIndexByPoint(point);
-        this.content[index] = content;
-    }
-
-    public FieldContent getContent(Point p) {
-        int index = getIndexByPoint(p);
-        return content[index];
-    }
-
-    public FieldContent getContent(int index) {
-        return content[index];
-    }
-
-    private int getIndexByPoint(Point p) {
-
-        int pageLength = Math.round((float) Math.sqrt(FIELD_COUNT));
-        assert p.x < pageLength && p.x >= 0;
-        assert p.y < pageLength && p.y >= 0;
-        return pageLength * p.y + p.x;
-    }
-
-    private Point getPointByIndex(int i) {
-        int pageLength=  Math.round((float) Math.sqrt(FIELD_COUNT));
-        int x = i % pageLength;
-        int y = i / pageLength;
-        return new Point(x, y);
-    }
-
-    private int getIndexByCoordinates(int x, int y) {
-        return getIndexByPoint(new Point(x, y));
-    }
-
-    public String getBoardHtml(int turn) {
-        StringBuilder sb = new StringBuilder();
-        String tableStyle = "\"min-width:300px; min-height:300px; border: 1px solid black; margin-bottom:50px;\">";
-        sb.append("<table style=");
-        sb.append(tableStyle);
-        sb.append("<h3>");
-        sb.append("Turn ");
-        sb.append(turn + 1);
-        sb.append("</h3>");
-
-        int pageLength = (int) Math.sqrt(FIELD_COUNT);
-
-        int index;
-        for (int row = 0; row < pageLength; row++) {
-            sb.append("<tr>");
-            for (int col = 0; col < pageLength; col++) {
-                index = getIndexByCoordinates(col, row);
-                Color color = FieldContent.getColor(content[index]);
-                String hexColor = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
-                String style = "style=\"background-color:" + hexColor + ";\">";
-                sb.append("<td ");
-                sb.append(style);
-                sb.append("</td>");
-            }
-            sb.append("</tr>");
-        }
-
-        sb.append("</table>");
-        return sb.toString();
-    }
-
-    //checking bounds
-    public boolean isOutOfBounds(Point p) {
-        int pageLength = Math.round((float) Math.sqrt(FIELD_COUNT));
-        return p.x >= pageLength || p.x < 0 ||
-                p.y >= pageLength || p.y < 0;
-    }
-
     public void checkArea(PlayerColor color) {
-        int emptyFieldCount;
-        int reachbleEmptyFieldCount;
+        List<Point> reachableEmptyField;
 
         //iterativ durch leere felder
         List<Point> emptyFields = getEmptyPoints();
         ArrayList<Point> reachableFromPoint = new ArrayList<>();
-        emptyFieldCount = emptyFields.size();
+        ArrayList<Area> listOfAreas1 = new ArrayList<>();
+        List<Point> emptyIterations = emptyFields;
 
+        while (emptyIterations.size() != 0) {
+            reachableEmptyField = getReachableFields(color, emptyIterations.get(0), reachableFromPoint);
+            Area reachableEmptyArea = new Area(reachableEmptyField, reachableEmptyField.size());
+            listOfAreas1.add(reachableEmptyArea);
 
-        ArrayList<Area> listOfAreas = new ArrayList<>();
+            List<Point> finalReachableEmptyField = reachableEmptyField;
+            emptyIterations = emptyIterations.stream().filter(
+                            point -> finalReachableEmptyField.stream().noneMatch(
+                                    point1 -> point1.x == point.x && point.y == point1.y))
+                    .toList();
+        }
 
-        for (Point p : emptyFields) {
-            //man merke sich immer den höchsten wert erreichbarer felder für jeden punkt
-            //wenn wenn erreichbare felder > höchster wert  && > 0 -> färbe ein.
-            //benachbarte felder rekursiv ebenfalls "einnehmen" bis grenzen erreicht werden.
-            //empty fields muss verkleinert werden um die anzahl eingenommener punkte
-            if (reachableFromPoint.contains(p)) continue;
-            reachableFromPoint.clear();
-
-            reachbleEmptyFieldCount = getReachableFields(color, p, reachableFromPoint, 0);
-            Area reachableEmptyArea = new Area(new ArrayList<>(reachableFromPoint), reachbleEmptyFieldCount);
-            boolean nothingToConquer = reachableEmptyArea.getAreaSize() == emptyFieldCount;
-            if (nothingToConquer) {
-                return;
-            }
-            //punkte müssen eingenommen werden
-            else {
-                getPartsToConquer(color, listOfAreas, reachableEmptyArea);
-            }
+        while (listOfAreas1.size() != 1) {
+            Area a = listOfAreas1.stream().sorted(Comparator.comparingInt(Area::getAreaSize)).toList().get(0);
+            listOfAreas1.remove(a);
+            getPartsToConquer(color, listOfAreas1, a);
         }
     }
 
@@ -173,7 +90,7 @@ public class Board {
             return;
         }
         for (Point p1 : allPoints) {
-            if (p1.x == p.x && p1.y == p.y) {
+            if (getContent(p1) == (color.name.equals("Black")? FieldContent.BLACK_TERRITORY: FieldContent.WHITE_TERRITORY)) {
                 return;
             }
         }
@@ -198,38 +115,89 @@ public class Board {
         conquerArea(color, new Point(p.x + 1, p.y + 1), allPoints);
     }
 
-    private int getReachableFields(PlayerColor color, Point p, List<Point> allPoints, int counter) {
-        //wenn das feld feld nicht dem spieler gehört, dann:
-        if (isOutOfBounds(p)) {
-            return counter;
-        }
-
-        //es ist ein valider punkt, überprüfe, ob der punkt bereits besucht wurde.
-        for (Point p1 : allPoints) {
-            if (p1.x == p.x && p1.y == p.y) {
-                return counter;
+    private List<Point> getReachableFields(PlayerColor color, Point p, List<Point> allPoints) {
+        List<Point> queue = new ArrayList<>();
+        List<Point> emptyPoints = new ArrayList<>();
+        List<Point> reachedPoints = new ArrayList<>();
+        queue.add(p);
+        while (queue.size() != 0) {
+            Point newP = queue.get(0);
+            queue.remove(newP);
+            if (getContent(newP) == FieldContent.getOccupiedByPlayer(color)) {
+                continue;
             }
+            if (getContent(newP) == FieldContent.EMPTY) {
+                emptyPoints.add(newP);
+            }
+            reachedPoints.add(newP);
+
+            Point[] points = {
+                    new Point(newP.x - 1, newP.y - 1),
+                    new Point(newP.x - 1, newP.y),
+                    new Point(newP.x - 1, newP.y + 1),
+                    new Point(newP.x, newP.y - 1),
+                    new Point(newP.x, newP.y),
+                    new Point(newP.x, newP.y + 1),
+                    new Point(newP.x + 1, newP.y - 1),
+                    new Point(newP.x + 1, newP.y),
+                    new Point(newP.x + 1, newP.y + 1),
+            };
+
+            List<Point> realisticPoints = Arrays.stream(points).filter(point -> !isOutOfBounds(point)).toList();
+            List<Point> filteredNewPoints = realisticPoints.stream().filter(point -> queue.stream().noneMatch(point1 ->
+                    point.x == point1.x && point.y == point1.y) &&
+                    reachedPoints.stream().noneMatch(point1 -> point.x == point1.x && point.y == point1.y)
+            ).toList();
+
+            queue.addAll(filteredNewPoints);
         }
-        allPoints.add(p);
+        return emptyPoints;
+    }
 
 
-        //ist das feld von dem Spieler occupied.
-        if (getContent(p) == FieldContent.getOccupiedByPlayer(color)) {
-            return counter;
-        }
-        int i = 0;
-        if (getContent(p) == FieldContent.EMPTY) {
-            i++;
-        }
+    //Acceptable methods below.
 
-        return getReachableFields(color, new Point(p.x - 1, p.y - 1), allPoints, counter) +
-                getReachableFields(color, new Point(p.x, p.y - 1), allPoints, counter) +
-                getReachableFields(color, new Point(p.x + 1, p.y - 1), allPoints, counter) +
-                getReachableFields(color, new Point(p.x - 1, p.y), allPoints, counter) +
-                getReachableFields(color, new Point(p.x + 1, p.y), allPoints, counter) +
-                getReachableFields(color, new Point(p.x - 1, p.y + 1), allPoints, counter) +
-                getReachableFields(color, new Point(p.x, p.y + 1), allPoints, counter) +
-                getReachableFields(color, new Point(p.x + 1, p.y + 1), allPoints, counter) + i;
+    public void setContent(List<Point> points, FieldContent content) {
+        points.forEach(p -> {
+            int index = getIndexByPoint(p);
+            this.content[index] = content;
+        });
+    }
+
+    public void setContent(Point point, FieldContent content) {
+        int index = getIndexByPoint(point);
+        this.content[index] = content;
+    }
+
+
+    public FieldContent getContent(Point p) {
+        int index = getIndexByPoint(p);
+        return content[index];
+    }
+
+    public FieldContent getContent(int index) {
+        return content[index];
+    }
+
+    private int getIndexByPoint(Point p) {
+
+        int pageLength = Math.round((float) Math.sqrt(FIELD_COUNT));
+        assert p.x < pageLength && p.x >= 0;
+        assert p.y < pageLength && p.y >= 0;
+        return pageLength * p.y + p.x;
+    }
+
+    private Point getPointByIndex(int i) {
+        int pageLength = Math.round((float) Math.sqrt(FIELD_COUNT));
+        int x = i % pageLength;
+        int y = i / pageLength;
+        return new Point(x, y);
+    }
+
+    public boolean isOutOfBounds(Point p) {
+        int pageLength = Math.round((float) Math.sqrt(FIELD_COUNT));
+        return p.x >= pageLength || p.x < 0 ||
+                p.y >= pageLength || p.y < 0;
     }
 
     private List<Point> getEmptyPoints() {
@@ -240,10 +208,46 @@ public class Board {
         return (int) Arrays.stream(content).filter(
                 fieldContent -> color == PlayerColor.BLACK && fieldContent == FieldContent.BLACK_TERRITORY ||
                         color == PlayerColor.WHITE && fieldContent == FieldContent.WHITE_TERRITORY
-                ).count();
+        ).count();
     }
 
-    public List<Point> getAllPoints(){
-        return  IntStream.range(0,content.length).mapToObj(this::getPointByIndex).toList();
+    public List<Point> getAllPoints() {
+        return IntStream.range(0, content.length).mapToObj(this::getPointByIndex).toList();
     }
+
+    private int getIndexByCoordinates(int x, int y) {
+        return getIndexByPoint(new Point(x, y));
+    }
+
+    public String getBoardHtml(int turn) {
+        StringBuilder sb = new StringBuilder();
+        String tableStyle = "\"min-width:300px; min-height:300px; border: 1px solid black; margin-bottom:50px;\">";
+        sb.append("<table style=");
+        sb.append(tableStyle);
+        sb.append("<h3>");
+        sb.append("Turn ");
+        sb.append(turn + 1);
+        sb.append("</h3>");
+
+        int pageLength = (int) Math.sqrt(FIELD_COUNT);
+
+        int index;
+        for (int row = 0; row < pageLength; row++) {
+            sb.append("<tr>");
+            for (int col = 0; col < pageLength; col++) {
+                index = getIndexByCoordinates(col, row);
+                Color color = FieldContent.getColor(content[index]);
+                String hexColor = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
+                String style = "style=\"background-color:" + hexColor + ";\">";
+                sb.append("<td ");
+                sb.append(style);
+                sb.append("</td>");
+            }
+            sb.append("</tr>");
+        }
+
+        sb.append("</table>");
+        return sb.toString();
+    }
+
 }

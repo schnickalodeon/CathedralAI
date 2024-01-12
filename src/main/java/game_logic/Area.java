@@ -1,14 +1,17 @@
 package game_logic;
 
+
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Area {
     private final ArrayList<Point> points;
     private final int numFields;
 
-    public Area(ArrayList<Point> points_, int reachbleEmptyFieldCount) {
+    public Area(List<Point> points_, int reachbleEmptyFieldCount) {
         points = new ArrayList<>();
+
         for (Point p : points_) {
             points.add(new Point(p.x, p.y));
         }
