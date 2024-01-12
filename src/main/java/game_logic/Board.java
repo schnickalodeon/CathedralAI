@@ -4,6 +4,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.IntStream;
 
 
 public class Board {
@@ -54,8 +56,9 @@ public class Board {
     }
 
     private Point getPointByIndex(int i) {
-        int x = i % 10;
-        int y = i / 10;
+        int pageLength=  Math.round((float) Math.sqrt(FIELD_COUNT));
+        int x = i % pageLength;
+        int y = i / pageLength;
         return new Point(x, y);
     }
 
@@ -101,15 +104,12 @@ public class Board {
                 p.y >= pageLength || p.y < 0;
     }
 
-
-    //check if the board has any area that needs to be owned by one of the players.
-    //move may not be necessary
     public void checkArea(PlayerColor color) {
         int emptyFieldCount;
         int reachbleEmptyFieldCount;
 
         //iterativ durch leere felder
-        ArrayList<Point> emptyFields = getEmptyPoints();
+        List<Point> emptyFields = getEmptyPoints();
         ArrayList<Point> reachableFromPoint = new ArrayList<>();
         emptyFieldCount = emptyFields.size();
 
@@ -132,15 +132,14 @@ public class Board {
             }
             //punkte müssen eingenommen werden
             else {
-                getPartsToConquer(color, listOfAreas, reachableEmptyArea, emptyFieldCount);
+                getPartsToConquer(color, listOfAreas, reachableEmptyArea);
             }
         }
     }
 
-    private void getPartsToConquer(PlayerColor color, ArrayList<Area> listOfAreas, Area newArea, int emptyFieldCount) {
-        //gibt es bereits einen Punkt auf den ich mich beziehe? haben wir bereits eine Area erkannt?
+    private void getPartsToConquer(PlayerColor color, ArrayList<Area> listOfAreas, Area newArea) {
         if (listOfAreas.size() > 0) {
-            //wenn sie keinen gemeinsamen punkt haben dann:
+            //entweder sie sind identisch oder haben keine Überschneidung an punkten.
             if (!listOfAreas.get(0).getArea().contains(newArea.getArea().get(0))) {
                 listOfAreas.add(new Area(new ArrayList<Point>(newArea.getArea()), newArea.getAreaSize()));
             }
@@ -233,24 +232,18 @@ public class Board {
                 getReachableFields(color, new Point(p.x + 1, p.y + 1), allPoints, counter) + i;
     }
 
-
-    //iterate through every field and check all empty fields. this would work better if things would be Colored.
-    private ArrayList<Point> getEmptyPoints() {
-        ArrayList<Point> emptyPoints = new ArrayList<>();
-        for (int i = 0; i < FIELD_COUNT; i++) {
-            if (getContent(i) == FieldContent.EMPTY) {
-                emptyPoints.add(getPointByIndex(i));
-            }
-        }
-        return emptyPoints;
+    private List<Point> getEmptyPoints() {
+        return getAllPoints().stream().filter(point -> getContent(point).getValue() == FieldContent.EMPTY.getValue()).toList();
     }
 
     public int getCapturedArea(PlayerColor color) {
-        int capturedCount = 0;
-        for (FieldContent f : content) {
-            if (color == PlayerColor.BLACK && f == FieldContent.BLACK_TERRITORY
-                    || color == PlayerColor.WHITE && f == FieldContent.WHITE_TERRITORY) capturedCount++;
-        }
-        return capturedCount;
+        return (int) Arrays.stream(content).filter(
+                fieldContent -> color == PlayerColor.BLACK && fieldContent == FieldContent.BLACK_TERRITORY ||
+                        color == PlayerColor.WHITE && fieldContent == FieldContent.WHITE_TERRITORY
+                ).count();
+    }
+
+    public List<Point> getAllPoints(){
+        return  IntStream.range(0,content.length).mapToObj(this::getPointByIndex).toList();
     }
 }
