@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
 
-
 public class Board {
     private static final int FIELD_COUNT = 100;
     private FieldContent[] content = new FieldContent[FIELD_COUNT];
@@ -29,58 +28,39 @@ public class Board {
     public void checkArea(PlayerColor color) {
         List<Point> reachableEmptyField;
 
-        //iterativ durch leere felder
         List<Point> emptyFields = getEmptyPoints();
-        ArrayList<Point> reachableFromPoint = new ArrayList<>();
-        ArrayList<Area> listOfAreas1 = new ArrayList<>();
-        List<Point> emptyIterations = emptyFields;
 
-        while (emptyIterations.size() != 0) {
-            reachableEmptyField = getReachableFields(color, emptyIterations.get(0), reachableFromPoint);
-            Area reachableEmptyArea = new Area(reachableEmptyField, reachableEmptyField.size());
-            listOfAreas1.add(reachableEmptyArea);
+        List<Area> areas = getAreas(color, emptyFields);
 
-            List<Point> finalReachableEmptyField = reachableEmptyField;
-            emptyIterations = emptyIterations.stream().filter(
-                            point -> finalReachableEmptyField.stream().noneMatch(
-                                    point1 -> point1.x == point.x && point.y == point1.y))
-                    .toList();
+
+        List<Area> sortedAreas = areas.stream().sorted(Comparator.comparingInt(Area::getAreaSize)).toList();
+        while (sortedAreas.size() > 1) {
+            Area a = sortedAreas.get(0);
+            sortedAreas = sortedAreas.stream().filter(area -> {
+                Point p = area.getArea().get(0);
+                return !a.contains(p);
+            }).toList();
+            getConquerableArea(color, a);
         }
 
-        while (listOfAreas1.size() != 1) {
-            Area a = listOfAreas1.stream().sorted(Comparator.comparingInt(Area::getAreaSize)).toList().get(0);
-            listOfAreas1.remove(a);
-            getPartsToConquer(color, listOfAreas1, a);
-        }
     }
 
-    private void getPartsToConquer(PlayerColor color, ArrayList<Area> listOfAreas, Area newArea) {
-        if (listOfAreas.size() > 0) {
-            //entweder sie sind identisch oder haben keine Überschneidung an punkten.
-            if (!listOfAreas.get(0).getArea().contains(newArea.getArea().get(0))) {
-                listOfAreas.add(new Area(new ArrayList<Point>(newArea.getArea()), newArea.getAreaSize()));
-            }
+    private List<Area> getAreas(PlayerColor color, List<Point> emptyIterations) {
+        List<Area> areas = new ArrayList<>();
+        while (emptyIterations.size() != 0) {
+            final List<Point> reachableEmptyField = getReachableFields(color, emptyIterations.get(0));
+            Area reachableEmptyArea = new Area(reachableEmptyField, reachableEmptyField.size());
+            areas.add(reachableEmptyArea);
+            emptyIterations = emptyIterations.stream().filter(point -> reachableEmptyField.stream().noneMatch(point1 -> point1.x == point.x && point.y == point1.y)).toList();
         }
-        //es wurde noch keine area erkannt; folglich kann diese Area gefahrlos hinzugefügt werden.
-        else {
-            listOfAreas.add(new Area(new ArrayList<Point>(newArea.getArea()), newArea.getAreaSize()));
-        }
-        //wir haben 2 Areas gefunden: folglich muss eine eingenommen werden.
-        if (listOfAreas.size() == 2) {
-            ArrayList<Point> pList = new ArrayList<>();
-            if (listOfAreas.get(0).getAreaSize() >= listOfAreas.get(1).getAreaSize()) {
-                if (listOfAreas.get(1).isConquerable(game.getPreviousMoves(), color)) {
+        return areas;
+    }
 
 
-                    conquerArea(color, listOfAreas.get(1).getArea().get(0), pList);
-                    listOfAreas.remove(1);
-                }
-            } else {
-                if (listOfAreas.get(0).isConquerable(game.getPreviousMoves(), color)) {
-                    conquerArea(color, listOfAreas.get(0).getArea().get(0), pList);
-                    listOfAreas.remove(0);
-                }
-            }
+    private void getConquerableArea(PlayerColor color, Area area) {
+        ArrayList<Point> pList = new ArrayList<>();
+        if (area.isConquerable(game.getPreviousMoves(), color)) {
+            conquerArea(color, area.getArea().get(0), pList);
         }
     }
 
@@ -90,7 +70,7 @@ public class Board {
             return;
         }
         for (Point p1 : allPoints) {
-            if (getContent(p1) == (color.name.equals("Black")? FieldContent.BLACK_TERRITORY: FieldContent.WHITE_TERRITORY)) {
+            if (p1.x == p.x && p1.y == p.y) {
                 return;
             }
         }
@@ -115,40 +95,39 @@ public class Board {
         conquerArea(color, new Point(p.x + 1, p.y + 1), allPoints);
     }
 
-    private List<Point> getReachableFields(PlayerColor color, Point p, List<Point> allPoints) {
+    private List<Point> getReachableFields(PlayerColor color, Point p) {
         List<Point> queue = new ArrayList<>();
         List<Point> emptyPoints = new ArrayList<>();
-        List<Point> reachedPoints = new ArrayList<>();
+        List<Point> donePoints = new ArrayList<>();
         queue.add(p);
+        donePoints.add(p);
+
         while (queue.size() != 0) {
             Point newP = queue.get(0);
             queue.remove(newP);
             if (getContent(newP) == FieldContent.getOccupiedByPlayer(color)) {
                 continue;
             }
-            if (getContent(newP) == FieldContent.EMPTY) {
+
+
+            FieldContent f = getContent(newP);
+            if (f == FieldContent.EMPTY ||
+                    f == FieldContent.CATHEDRAL ||
+                    color.value == PlayerColor.BLACK.value && f != FieldContent.BLACK_OCCUPIED ||
+                    color.value == PlayerColor.WHITE.value && f != FieldContent.WHITE_OCCUPIED
+            ) {
                 emptyPoints.add(newP);
             }
-            reachedPoints.add(newP);
 
             Point[] points = {
-                    new Point(newP.x - 1, newP.y - 1),
-                    new Point(newP.x - 1, newP.y),
-                    new Point(newP.x - 1, newP.y + 1),
-                    new Point(newP.x, newP.y - 1),
-                    new Point(newP.x, newP.y),
-                    new Point(newP.x, newP.y + 1),
-                    new Point(newP.x + 1, newP.y - 1),
-                    new Point(newP.x + 1, newP.y),
-                    new Point(newP.x + 1, newP.y + 1),
-            };
+                    new Point(newP.x - 1, newP.y - 1), new Point(newP.x - 1, newP.y), new Point(newP.x - 1, newP.y + 1),
+                    new Point(newP.x, newP.y - 1), new Point(newP.x, newP.y + 1),
+                    new Point(newP.x + 1, newP.y - 1), new Point(newP.x + 1, newP.y), new Point(newP.x + 1, newP.y + 1),};
 
             List<Point> realisticPoints = Arrays.stream(points).filter(point -> !isOutOfBounds(point)).toList();
-            List<Point> filteredNewPoints = realisticPoints.stream().filter(point -> queue.stream().noneMatch(point1 ->
-                    point.x == point1.x && point.y == point1.y) &&
-                    reachedPoints.stream().noneMatch(point1 -> point.x == point1.x && point.y == point1.y)
-            ).toList();
+            List<Point> filteredNewPoints = realisticPoints.stream().filter(point -> donePoints.stream().noneMatch(point1 -> point.x == point1.x && point.y == point1.y)).toList();
 
+            donePoints.addAll(filteredNewPoints);
             queue.addAll(filteredNewPoints);
         }
         return emptyPoints;
@@ -196,8 +175,7 @@ public class Board {
 
     public boolean isOutOfBounds(Point p) {
         int pageLength = Math.round((float) Math.sqrt(FIELD_COUNT));
-        return p.x >= pageLength || p.x < 0 ||
-                p.y >= pageLength || p.y < 0;
+        return p.x >= pageLength || p.x < 0 || p.y >= pageLength || p.y < 0;
     }
 
     private List<Point> getEmptyPoints() {
@@ -205,10 +183,7 @@ public class Board {
     }
 
     public int getCapturedArea(PlayerColor color) {
-        return (int) Arrays.stream(content).filter(
-                fieldContent -> color == PlayerColor.BLACK && fieldContent == FieldContent.BLACK_TERRITORY ||
-                        color == PlayerColor.WHITE && fieldContent == FieldContent.WHITE_TERRITORY
-        ).count();
+        return (int) Arrays.stream(content).filter(fieldContent -> color == PlayerColor.BLACK && fieldContent == FieldContent.BLACK_TERRITORY || color == PlayerColor.WHITE && fieldContent == FieldContent.WHITE_TERRITORY).count();
     }
 
     public List<Point> getAllPoints() {

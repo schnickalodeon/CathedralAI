@@ -38,17 +38,18 @@ public class Area {
     }
 
     int checkForMovesIn(ArrayList<Move> moves, PlayerColor color) {
-        ArrayList<Move> movesInArea = new ArrayList<>();
-        for (Move move : moves) {
-            if (contains(move.getPosition()) && color != move.getPlayer().getColor() ||
-                    contains(move.getPosition()) && move.getBuilding().getSize() == 6) {
-                movesInArea.add(move);
-            }
-        }
 
-        if (movesInArea.size() == 1 && !(movesInArea.get(0).getBuilding() == moves.get(0).getBuilding())) {
+        List<Move> movesInArea =  moves.stream().filter(move ->
+                        this.contains(move.getPosition()) &&
+                                color != move.getPlayer().getColor() ||
+                                this.contains(move.getPosition()) &&
+                                        move.getBuilding().getSize() == 6).toList();
+
+        if (movesInArea.size() == 1 &&
+                !(movesInArea.get(0).getBuilding() == moves.get(0).getBuilding())) {
             movesInArea.get(0).revert();
         }
+        if(color.value == PlayerColor.BLACK.value) System.out.println(movesInArea.size());
         return movesInArea.size();
     }
 }
