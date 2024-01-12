@@ -6,5 +6,6 @@ import game_logic.Player;
 
 public interface ArtificialIntelligent {
     Move getMove(Board board, Player player);
+
     void printBestNumbers();
 }

@@ -1,6 +1,6 @@
 package game_logic;
 
-import java.awt.Point;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +23,8 @@ public class Move {
 
     public List<Point> getOccupyingPoints() {
 
-        List<Point> shape =  new ArrayList<>();
-        building.getShape(direction).forEach(p -> shape.add(new Point(p.x,p.y)));
+        List<Point> shape = new ArrayList<>();
+        building.getShape(direction).forEach(p -> shape.add(new Point(p.x, p.y)));
 
         shape.forEach(p ->
         {
@@ -34,15 +34,19 @@ public class Move {
         return shape;
     }
 
-    public Building getBuilding() { return building; }
-    public Point getPosition() { return position;}
-    public String toString()
-    {
-        return player.toString() + " places " + building.toString() + " at (" + position.x + "|" + position.y+")";
+    public Building getBuilding() {
+        return building;
     }
 
-    public void revert()
-    {
+    public Point getPosition() {
+        return position;
+    }
+
+    public String toString() {
+        return player.toString() + " places " + building.toString() + " at (" + position.x + "|" + position.y + ")";
+    }
+
+    public void revert() {
         getPlayer().getBuildings().add(building);
     }
 }

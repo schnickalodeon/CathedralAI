@@ -16,24 +16,31 @@ public abstract class Building {
     public FieldContent getContent() {
         return FieldContent.getOccupiedByPlayer(playerColor);
     }
-    protected Building(String name, Turnable turnable, PlayerColor color){
+
+    protected Building(String name, Turnable turnable, PlayerColor color) {
         this.name = name;
         this.turnable = turnable;
         this.playerColor = color;
     }
-    public Integer getSize(){return points.size();}
 
-    protected Building(String name, Turnable turnable, Player player, Point...point) {
+    public Integer getSize() {
+        return points.size();
+    }
+
+    protected Building(String name, Turnable turnable, Player player, Point... point) {
         this.name = name;
         points = Arrays.asList(point);
         this.turnable = turnable;
         this.playerColor = player.getColor();
     }
 
-    protected void addPointToShape(int x, int y){
-        points.add(new Point(x,y));
+    protected void addPointToShape(int x, int y) {
+        points.add(new Point(x, y));
     }
-    protected int getNumPointsOfShape(){return points.size();}
+
+    protected int getNumPointsOfShape() {
+        return points.size();
+    }
 
     public static List<Building> getAllBuildingsForPlayer(Player player) {
 
@@ -57,7 +64,7 @@ public abstract class Building {
         buildings.add(new Academy(player));
         buildings.add(new Abbey(player));
 
-        if(player.getColor() == PlayerColor.WHITE){
+        if (player.getColor() == PlayerColor.WHITE) {
             buildings.add(new Cathedral());
         }
 
@@ -65,20 +72,18 @@ public abstract class Building {
     }
 
     public List<Point> getShape(Direction direction) {
-       return turn(direction);
+        return turn(direction);
     }
 
     public int getTurnable() {
         return turnable.getValue();
     }
 
-    public List<Point> turn(Direction direction)
-    {
+    public List<Point> turn(Direction direction) {
         List<Point> rotated = new ArrayList<>();
-        points.forEach(p->{
+        points.forEach(p -> {
             Point turnedPoint = p;
-            for( int turns =0 ; turns < direction.getNumber()%turnable.getValue(); turns++)
-            {
+            for (int turns = 0; turns < direction.getNumber() % turnable.getValue(); turns++) {
                 turnedPoint = new Point(-turnedPoint.y, turnedPoint.x);
             }
             rotated.add(turnedPoint);
@@ -105,8 +110,7 @@ public abstract class Building {
 
         int nameASCISum = 0;
 
-        for (char c: name.toCharArray())
-        {
+        for (char c : name.toCharArray()) {
             nameASCISum += Character.getNumericValue(c);
         }
 

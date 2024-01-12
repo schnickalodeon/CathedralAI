@@ -10,11 +10,9 @@ public enum FieldContent {
     WHITE_TERRITORY("White Territory",(byte)4),
     BLACK_TERRITORY("Black Territory",(byte)5);
 
-    private final String name;
     private final byte value;
 
     FieldContent(String name,byte value) {
-        this.name = name;
         this.value = value;
     }
 
@@ -53,7 +51,7 @@ public enum FieldContent {
             case WHITE_TERRITORY -> {return Color.lightGray;}
             case BLACK_OCCUPIED -> { return Color.BLACK; }
             case BLACK_TERRITORY -> {return Color.darkGray;}
-            case CATHEDRAL -> { return Color.GREEN; }
+            case CATHEDRAL -> { return Color.GREEN;}
             default -> { return Color.CYAN; }
         }
     }

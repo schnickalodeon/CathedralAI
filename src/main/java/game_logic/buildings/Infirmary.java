@@ -10,10 +10,10 @@ public class Infirmary extends Building {
     public Infirmary(Player player) {
         super("Infirmary",
                 Turnable.Not, player,
-                        new Point(-1,0),
-                        new Point(0,-1),
-                        new Point(0,0),
-                        new Point(0,1),
-                        new Point(1,0));
+                new Point(-1, 0),
+                new Point(0, -1),
+                new Point(0, 0),
+                new Point(0, 1),
+                new Point(1, 0));
     }
 }

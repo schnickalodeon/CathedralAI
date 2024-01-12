@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+
 /* Heuristiken:
  *
  * -> Summe der Punkte, die man durch das Setzen der züge erreicht minimieren
  * Maximierung von gebiet eingenommen, wenn möglich.
  *
-*/
-public class DeterministicAI extends AI
-{
+ */
+public class DeterministicAI extends AI {
     float possibleMovesFactor;
     float areaSizeFactor;
     float scoreFactor;
@@ -29,7 +29,7 @@ public class DeterministicAI extends AI
         addHeuristics();
     }
 
-    private void addHeuristics(){
+    private void addHeuristics() {
         Heuristic maximizeScore = new MaximizeDeltaScoreHeuristic(scoreFactor);
         Heuristic maximizePossibleMoves = new MaximizeDeltaPosibleMovesHeuristic(possibleMovesFactor);
         Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(areaSizeFactor);
@@ -41,8 +41,7 @@ public class DeterministicAI extends AI
 
 
     @Override
-    public Move getMove(Board board, Player player)
-    {
+    public Move getMove(Board board, Player player) {
         //Wir wollen optimieren für delta anzahlzüge in 3 zügen zukunft.
         Move nextMove;
         List<Building> triedBuildings = new ArrayList<>();
@@ -51,14 +50,12 @@ public class DeterministicAI extends AI
             List<Building> biggestunused = player.getBiggestBuilding(b -> !triedBuildings.contains(b));
             List<Move> moveList;
             if (biggestunused.size() == 1) {
-                if(biggestunused.get(0).getSize()==6) {
+                if (biggestunused.get(0).getSize() == 6) {
                     moveList = player.generateValidMoves(biggestunused);
-                }
-                else{
+                } else {
                     moveList = player.generateValidMoves(player.getBuildings());
                 }
-            }
-            else {
+            } else {
                 moveList = player.generateValidMoves(player.getBuildings());
             }
             nextMove = determineBestMove(moveList, player);
@@ -74,12 +71,12 @@ public class DeterministicAI extends AI
     private Move determineBestMove(List<Move> possibleMoveList, Player player) {
 
         List<MoveResult> PromisingMoves;
-        PromisingMoves = this.getBestMove(possibleMoveList, player.getGame(),3);
+        PromisingMoves = this.getBestMove(possibleMoveList, player.getGame(), 3);
 
         List<Float> allTheGoodMoves = new ArrayList<>();
-        int moveSelector=0;
+        int moveSelector = 0;
         float moveScore = 0;
-        int pointer=0;
+        int pointer = 0;
         for (MoveResult m : PromisingMoves) {
             if (m != null) {
                 Game test = new Game(player.getGame());
@@ -87,9 +84,9 @@ public class DeterministicAI extends AI
                 test.getActivePlayer().removeBuildiung(m.getMove().getBuilding());
                 test.getBoard().checkArea(test.getActivePlayer().getColor());
                 List<MoveResult> listOfGoodMoves;
-                listOfGoodMoves = this.getBestMove(test.getActivePlayer().generateValidMoves(test.getActivePlayer().getBuildings()), test,3);
+                listOfGoodMoves = this.getBestMove(test.getActivePlayer().generateValidMoves(test.getActivePlayer().getBuildings()), test, 3);
                 float sum = 0;
-                int notNullCounter=0;
+                int notNullCounter = 0;
                 for (MoveResult mr : listOfGoodMoves) {
                     if (mr != null)
                         sum += mr.getScore();
@@ -109,6 +106,6 @@ public class DeterministicAI extends AI
     }
 
     public void printBestNumbers() {
-        System.out.println("x1= " + possibleMovesFactor + " ,x2= " + areaSizeFactor + ",x3="+ scoreFactor);
+        System.out.println("x1= " + possibleMovesFactor + " ,x2= " + areaSizeFactor + ",x3=" + scoreFactor);
     }
 }

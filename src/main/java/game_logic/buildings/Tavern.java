@@ -8,6 +8,6 @@ import java.awt.*;
 
 public class Tavern extends Building {
     public Tavern(Player player) {
-        super("Tavern", Turnable.Not, player,new Point(0,0));
+        super("Tavern", Turnable.Not, player, new Point(0, 0));
     }
 }

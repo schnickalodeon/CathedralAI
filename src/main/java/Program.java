@@ -1,5 +1,8 @@
 import GUI.GUI;
-import ai.*;
+import ai.ActuallyAHuman;
+import ai.ArtificialIntelligent;
+import ai.DeterministicAI;
+import ai.OtherDeterministicAI;
 import game_logic.Game;
 import processing.core.PApplet;
 
@@ -13,7 +16,7 @@ public class Program extends PApplet {
         gui = new GUI();
         Random r = new Random();
         ArtificialIntelligent alice = new ActuallyAHuman();
-        ArtificialIntelligent bob = new OtherDeterministicAI(r.nextFloat(),r.nextFloat());
+        ArtificialIntelligent bob = new OtherDeterministicAI(r.nextFloat(), r.nextFloat());
         for (int i = 0; i < 100; i++) {
             game = new Game(bob, alice, gui);
             gui.setPlayers(game);
@@ -22,7 +25,7 @@ public class Program extends PApplet {
             if (didWhitewin) {
                 bob = new DeterministicAI(r.nextFloat(), r.nextFloat(), r.nextFloat());
             } else {
-                alice = new OtherDeterministicAI(r.nextFloat(),r.nextFloat());
+                alice = new OtherDeterministicAI(r.nextFloat(), r.nextFloat());
             }
         }
         bob.printBestNumbers();

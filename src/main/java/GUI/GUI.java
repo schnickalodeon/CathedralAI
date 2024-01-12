@@ -43,39 +43,32 @@ public class GUI {
             processing.background(0x99, 0x6A, 0x44);
             processing.fill(0xff);
             processing.textSize(20);
-            processing.stroke(0x9a,0x4c,0x28);
+            processing.stroke(0x9a, 0x4c, 0x28);
             processing.text("black:" + Playerblack.countPoints() + " White:" + PlayerWhite.countPoints(), 20, 20);
             int squareSize = ((processing.width - 200) / 10);
             for (int i = 0; i < 100; i++) {
                 int content = game.getBoard().getContent(i).getValue();
                 switch (content) {
-                    case 0 -> {
-                        processing.fill(0xB4,0x69,0x39);
-                    }
-                    case 1 -> {
-                        processing.fill(0x6b, 0x29, 0x14);
-                    }
-                    case 2 -> {
-                        processing.fill(0xEB, 0xCB, 0x9E);
-                    }
-                    case 3 -> {
-                        processing.fill( 0x1c,0x08,0x04);
-                    }
-                    case 4 -> {
-                        processing.fill(0xB9,0x8f, 0x68);
-                    }
-                    case 5 -> {
-                        processing.fill(0x2B, 0x0D, 0x0A);
-                    }
-                    default -> {
-                    }
+                    //white
+                    case 0 -> processing.fill(0xB4, 0x69, 0x39);
+                    //black
+                    case 1 -> processing.fill(0x6b, 0x29, 0x14);
+                    //neutral
+                    case 2 -> processing.fill(0xEB, 0xCB, 0x9E);
+                    //blackonly
+                    case 3 -> processing.fill(0x1c, 0x08, 0x04);
+                    //whiteOnly
+                    case 4 -> processing.fill(0xB9, 0x8f, 0x68);
+                    //cathedral
+                    default -> processing.fill(0x2B, 0x0D, 0x0A);
                 }
                 processing.strokeWeight(1f);
                 processing.stroke(0x4B, 0x21, 0x01);
 
+                //floating point imprecision is wanted here.
                 processing.square(i % 10 * squareSize, 200 + i / 10 * squareSize, squareSize);
             }
-            processing.fill(0xBA,0x3d,0x20);
+            processing.fill(0xBA, 0x3d, 0x20);
             for (Point p : PlayerHover) {
                 processing.square((p.x + playerPos.x) * squareSize, 200 + (p.y + playerPos.y) * squareSize, squareSize);
             }
@@ -130,11 +123,11 @@ public class GUI {
     public int checkForDirection(int directionPointer) {
         if (loop) {
             if (processing.keyPressed && processing.key == 'Q' || processing.keyPressed && processing.key == 'q') {
-                if (--directionPointer < 0) return 3;
+                if (--directionPointer < 0) return 4;
                 loop = false;
             }
             if (processing.keyPressed && processing.key == 'E' || processing.keyPressed && processing.key == 'e') {
-                if (++directionPointer >= 4) return 0;
+                if (++directionPointer >= 4) return -1;
                 loop = false;
             }
         }
@@ -145,15 +138,17 @@ public class GUI {
 
     public int selectBuilding(int buildingPointer, int listSize) {
         if (processing == null) return buildingPointer;
-        if (processing.keyPressed && processing.key == 'Y' || processing.keyPressed && processing.key == 'y') {
-            loop = false;
-            if (++buildingPointer >= listSize) return 0;
-        }
-        if (processing.keyPressed && processing.key == 'X' || processing.keyPressed && processing.key == 'x') {
-            loop = false;
-            if (--buildingPointer < 0) return listSize - 1;
+        loop = false;
+        if(processing.keyPressed) {
+            try{
+                final int a = Integer.parseInt(processing.key+"");
+                if(a  >= listSize) return 0;
+                return a;
+            } catch (Exception e){
+                return buildingPointer;
+            }
+
         }
         return buildingPointer;
     }
 }
-

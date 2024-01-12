@@ -1,57 +1,51 @@
 package game_logic;
 
-import game_logic.buildings.Cathedral;
-
 import java.awt.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class Area
-{
-    private ArrayList<Point> points;
-    private int numFields;
+public class Area {
+    private final ArrayList<Point> points;
+    private final int numFields;
 
-    public Area(ArrayList<Point> points_, int reachbleEmptyFieldCount)
-    {
+    public Area(ArrayList<Point> points_, int reachbleEmptyFieldCount) {
         points = new ArrayList<>();
-        for(Point p: points_) {
+        for (Point p : points_) {
             points.add(new Point(p.x, p.y));
         }
         numFields = reachbleEmptyFieldCount;
     }
 
-    public int getAreaSize()
-    {
+    public int getAreaSize() {
         return numFields;
     }
-    public ArrayList<Point> getArea(){return points;}
-    boolean contains(Point p)
-    {
-        for (Point point : points)
-        {
+
+    public ArrayList<Point> getArea() {
+        return points;
+    }
+
+    boolean contains(Point p) {
+        for (Point point : points) {
             if (point.x == p.x && point.y == p.y) return true;
         }
         return false;
     }
 
-    public boolean isConquerable(ArrayList<Move> moves, PlayerColor color)
-    {
-        return checkForMovesIn(moves,color) <= 2;}
+    public boolean isConquerable(ArrayList<Move> moves, PlayerColor color) {
+        return checkForMovesIn(moves, color) <= 2;
+    }
 
-    int checkForMovesIn(ArrayList<Move> moves,  PlayerColor color)
-    {
-        ArrayList<Move> movesInArea=  new ArrayList<>();
-        for (int i=0; i<moves.size();i++) {
-            if (contains(moves.get(i).getPosition()) && color != moves.get(i).getPlayer().getColor()||
-            contains(moves.get(i).getPosition()) && moves.get(i).getBuilding().getSize() == 6) {
-                movesInArea.add(moves.get(i));
+    int checkForMovesIn(ArrayList<Move> moves, PlayerColor color) {
+        ArrayList<Move> movesInArea = new ArrayList<>();
+        for (Move move : moves) {
+            if (contains(move.getPosition()) && color != move.getPlayer().getColor() ||
+                    contains(move.getPosition()) && move.getBuilding().getSize() == 6) {
+                movesInArea.add(move);
             }
         }
 
-            if (movesInArea.size() == 1 && !(movesInArea.get(0).getBuilding()== moves.get(0).getBuilding()))
-            {
-                movesInArea.get(0).revert();
-            }
+        if (movesInArea.size() == 1 && !(movesInArea.get(0).getBuilding() == moves.get(0).getBuilding())) {
+            movesInArea.get(0).revert();
+        }
         return movesInArea.size();
     }
 }

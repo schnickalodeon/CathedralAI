@@ -10,10 +10,10 @@ public class Castle extends Building {
     public Castle(Player player) {
         super("Castle",
                 Turnable.Full, player,
-                new Point(-1,0),
-                new Point(-1,1),
-                new Point(0,0),
-                new Point(1,0),
-                new Point(1,1));
+                new Point(-1, 0),
+                new Point(-1, 1),
+                new Point(0, 0),
+                new Point(1, 0),
+                new Point(1, 1));
     }
 }

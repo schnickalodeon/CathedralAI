@@ -1,16 +1,16 @@
-
 package ai;
 
-import ai.heuristic.*;
-import game_logic.*;
-import game_logic.buildings.Cathedral;
+import ai.heuristic.Heuristic;
+import ai.heuristic.MaximizeDeltaAreasizeHeuristic;
+import ai.heuristic.MaximizeDeltaScoreHeuristic;
+import ai.heuristic.MoveResult;
+import game_logic.Board;
+import game_logic.Building;
+import game_logic.Move;
+import game_logic.Player;
 
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
@@ -22,19 +22,9 @@ import java.util.stream.Collectors;
  */
 public class OtherDeterministicAI extends AI {
 
-    public float getAreaSizeFactor() {
-        return areaSizeFactor;
-    }
-
-   private float areaSizeFactor;
-
-    public float getScoreFactor() {
-        return scoreFactor;
-    }
-
-    private float scoreFactor;
-
     private static final Random random = new Random();
+    private final float areaSizeFactor;
+    private final float scoreFactor;
 
     public OtherDeterministicAI(float x2, float x3) {
         this.areaSizeFactor = x2;
@@ -43,14 +33,22 @@ public class OtherDeterministicAI extends AI {
     }
 
     public OtherDeterministicAI(OtherDeterministicAI ai) {
-       this.areaSizeFactor = ai.getAreaSizeFactor();
-       this.scoreFactor = ai.getScoreFactor();
-       addHeuristics();
+        this.areaSizeFactor = ai.getAreaSizeFactor();
+        this.scoreFactor = ai.getScoreFactor();
+        addHeuristics();
+    }
+
+    public float getAreaSizeFactor() {
+        return areaSizeFactor;
+    }
+
+    public float getScoreFactor() {
+        return scoreFactor;
     }
 
     private void addHeuristics() {
         Heuristic maximizeScore = new MaximizeDeltaScoreHeuristic(scoreFactor);
-        Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(areaSizeFactor*100);
+        Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(areaSizeFactor * 100);
 
 
         this.addHeuristic(maximizeScore);
@@ -102,7 +100,7 @@ public class OtherDeterministicAI extends AI {
         List<Future<MoveResult>> tmpValues = null;
         ExecutorService service = Executors.newFixedThreadPool(20);
         List<Callable<MoveResult>> threads = new ArrayList<>();
-        List<MoveResult>PromisingNonNullMoves = promisingMoves.stream().filter(m -> m != null).collect(Collectors.toList());
+        List<MoveResult> PromisingNonNullMoves = promisingMoves.stream().filter(Objects::nonNull).toList();
         for (MoveResult m : PromisingNonNullMoves) {
             threads.add(new DeterministicThreading(this, player.getGame(), m));
         }
@@ -114,10 +112,11 @@ public class OtherDeterministicAI extends AI {
 
         int i = 0;
         do {
+            assert tmpValues != null;
             if (tmpValues.get(i).isDone()) {
                 i++;
             }
-        }while (i < tmpValues.size());
+        } while (i < tmpValues.size());
         return getBestMoveFromFutures(tmpValues);
 
     }
@@ -128,20 +127,16 @@ public class OtherDeterministicAI extends AI {
         return bestMoveResult.map(MoveResult::getMove).orElse(null);
     }
 
-    private List<MoveResult> getResultsFromFuture(List<Future<MoveResult>> tmpValues){
-        List<MoveResult> result = tmpValues.stream().map(future -> {
+    private List<MoveResult> getResultsFromFuture(List<Future<MoveResult>> tmpValues) {
+
+        return tmpValues.stream().map(future -> {
             try {
                 return future.get();
-            } catch (InterruptedException exception) {
+            } catch (InterruptedException | ExecutionException exception) {
                 exception.printStackTrace();
-                return null;
-            } catch (ExecutionException e) {
-                e.printStackTrace();
                 return null;
             }
         }).collect(Collectors.toList());
-
-        return result;
     }
 
     public void printBestNumbers() {

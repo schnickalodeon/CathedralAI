@@ -9,7 +9,7 @@ import java.awt.*;
 public class Stable extends Building {
     public Stable(Player player) {
         super("Stable", Turnable.Half, player,
-                new Point(0,0),
-                new Point(1,0));
+                new Point(0, 0),
+                new Point(1, 0));
     }
 }

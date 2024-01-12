@@ -9,11 +9,11 @@ import java.awt.*;
 public class Tower extends Building {
     public Tower(Player player) {
         super("Tower"
-        , Turnable.Full, player,
-                        new Point(-1,-1),
-                        new Point(0,-1),
-                        new Point(0,0),
-                        new Point(1,0),
-                        new Point(1,1));
+                , Turnable.Full, player,
+                new Point(-1, -1),
+                new Point(0, -1),
+                new Point(0, 0),
+                new Point(1, 0),
+                new Point(1, 1));
     }
 }

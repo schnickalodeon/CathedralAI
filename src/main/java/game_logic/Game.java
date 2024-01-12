@@ -5,11 +5,9 @@ import ai.ArtificialIntelligent;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Game {
     private static final boolean DEBUG = false;
@@ -24,13 +22,20 @@ public class Game {
     private ZonedDateTime start;
     private ZonedDateTime end;
 
-    private ArrayList<Move> moves = new ArrayList<>();
+    private final ArrayList<Move> moves = new ArrayList<>();
     private GUI gui;
 
-    public int getTurnNumber(){ return turnNumber; }
-    public ArrayList<Move> getPreviousMoves(){return moves;}
-    public Board getBoard(){ return board; }
+    public int getTurnNumber() {
+        return turnNumber;
+    }
 
+    public ArrayList<Move> getPreviousMoves() {
+        return moves;
+    }
+
+    public Board getBoard() {
+        return board;
+    }
 
 
     public Game(ArtificialIntelligent artificialIntelligentWhite, ArtificialIntelligent artificialIntelligentBlack, GUI gui) {
@@ -38,26 +43,28 @@ public class Game {
         this.white = new PlayerWhite("Alice", this, artificialIntelligentWhite);
         this.black = new PlayerBlack("Bob", this, artificialIntelligentBlack);
         this.isFinished = false;
-        while(this.gui==null) {
+        while (this.gui == null) {
             this.gui = gui;
         }
         gui.setGame(this);
     }
 
-    public Game(Game game)
-    {
+    public Game(Game game) {
         this.board = new Board(game.board, this);
         this.white = new PlayerWhite(game.white, this);
         this.black = new PlayerBlack(game.black, this);
         this.isFinished = false;
+        this.turnNumber = game.turnNumber;
+        this.start = game.start;
+        this.end =game.end;
+        this.gui = game.gui;
     }
 
-    public boolean start(){
+    public boolean start() {
         createGameFile();
-        System.out.println("starting game...");
         start = ZonedDateTime.now();
 
-        while(!isFinished){
+        while (!isFinished) {
             turn();
         }
         end = ZonedDateTime.now();
@@ -65,18 +72,18 @@ public class Game {
         printResult();
 
         closeGameFile();
-        return white.countPoints()> black.countPoints();
+        return white.countPoints() > black.countPoints();
     }
 
     private void printResult() {
-        long seconds = ChronoUnit.SECONDS.between(start,end);
-        System.out.println(String.format("\nThe Game is over and took %d Seconds\n------------------------------", seconds));
+        long seconds = ChronoUnit.SECONDS.between(start, end);
+        System.out.printf("\nThe Game is over and took %d Seconds\n------------------------------%n", seconds);
         System.out.println(white.getResult());
         System.out.println(black.getResult());
         System.out.println("=========================\n\n");
     }
 
-    public void turn(){
+    public void turn() {
         //LocalTime startTurn = LocalTime.now();
         Player player = getActivePlayer();
         //LocalTime bufferStart;
@@ -96,15 +103,13 @@ public class Game {
                 bufferStart = LocalTime.now();
             }*/
 
-            if (move == null)
-            {
-                if(DEBUG) System.out.println("failed to move!");
+            if (move == null) {
+                if (DEBUG) System.out.println("failed to move!");
                 break;
             }
             wasSuccessful = player.makeMove(move);
-            if(wasSuccessful){
-                if(DEBUG)
-                {
+            if (wasSuccessful) {
+                if (DEBUG) {
                     System.out.println(move);
                 }
 
@@ -117,18 +122,15 @@ public class Game {
                 moves.add(move);
                 appendGameFile();
             }
-        } while(!wasSuccessful);
+        } while (!wasSuccessful);
         turnNumber++;
         checkGameOver();
-
-
 
 
     }
 
     private void checkGameOver() {
-        if(white.getViableMoves().isEmpty() && black.getViableMoves().isEmpty()  && !moves.isEmpty())
-        {
+        if (white.getViableMoves().isEmpty() && black.getViableMoves().isEmpty() && !moves.isEmpty()) {
             isFinished = true;
         }
     }
@@ -137,50 +139,55 @@ public class Game {
         // White or Black
         return (turnNumber % 2 == 0) ? white : black;
     }
-    public Player getInactivePlayer()
-    {
-        return (turnNumber % 2 == 0) ? black: white;
+
+    public Player getInactivePlayer() {
+        return (turnNumber % 2 == 0) ? black : white;
     }
 
-    private void appendGameFile(){
+    private void appendGameFile() {
         String boardContent = board.getBoardHtml(turnNumber);
-        try(FileWriter writer = new FileWriter(GAME_FILE_NAME,true)) {
+        try (FileWriter writer = new FileWriter(GAME_FILE_NAME, true)) {
             writer.append(boardContent);
-        }
-        catch (IOException ex){
+        } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
     }
 
-    private void createGameFile(){
+    private void createGameFile() {
 
-        try(FileWriter writer = new FileWriter(GAME_FILE_NAME,true)) {
+        try (FileWriter writer = new FileWriter(GAME_FILE_NAME, true)) {
             writer.append("<html>");
             writer.append("<body style=\"background-color:grey;\">");
-        }
-        catch (IOException ex){
+        } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
     }
 
-    private void closeGameFile(){
-        try(FileWriter writer = new FileWriter(GAME_FILE_NAME,true)) {
+    private void closeGameFile() {
+        try (FileWriter writer = new FileWriter(GAME_FILE_NAME, true)) {
             writer.append("</body>");
             writer.append("</html>");
 
-        }
-        catch (IOException ex){
+        } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
 
 
     }
 
-    public void setGUI (GUI gui){
+    public void setGUI(GUI gui) {
         this.gui = gui;
     }
-    public GUI getGui(){return gui;}
 
-    public Player getWhite(){return white; }
-    public Player getBlack(){return black;}
+    public GUI getGui() {
+        return gui;
+    }
+
+    public Player getWhite() {
+        return white;
+    }
+
+    public Player getBlack() {
+        return black;
+    }
 }

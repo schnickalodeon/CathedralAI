@@ -2,12 +2,9 @@ package ai;
 
 import GUI.GUI;
 import game_logic.*;
-import game_logic.buildings.Cathedral;
 import processing.core.PApplet;
 
 import java.awt.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class ActuallyAHuman extends AI {
     Point Position;
@@ -19,13 +16,13 @@ public class ActuallyAHuman extends AI {
     @Override
     public Move getMove(Board board, Player player) {
         Position = new Point(5, 5);
-        int directionPointer =0;
-        int buildingPointer =0;
+        int directionPointer = 0;
+        int buildingPointer = 0;
 
         d = Direction.getDirectionByValue(directionPointer);
         b = player.getBuildings().get(buildingPointer);
 
-        while (p==null) {
+        while (p == null) {
             gui = player.getGame().getGui();
             p = gui.getProcessing();
         }
@@ -34,7 +31,7 @@ public class ActuallyAHuman extends AI {
             gui.playerHoveringBuilding(b.getShape(d), Position);
             Position = gui.checkForMovement(Position);
             directionPointer = gui.checkForDirection(directionPointer);
-            buildingPointer = gui.selectBuilding(buildingPointer,player.getBuildings().size());
+            buildingPointer = gui.selectBuilding(buildingPointer, player.getBuildings().size());
             d = Direction.getDirectionByValue(directionPointer);
             b = player.getBuildings().get(buildingPointer);
             if (p.keyPressed && p.keyCode == p.ENTER) {
@@ -48,7 +45,6 @@ public class ActuallyAHuman extends AI {
 
     @Override
     public void printBestNumbers() {
-        System.out.println("ich.. bin ein mensch!");
 
     }
 }

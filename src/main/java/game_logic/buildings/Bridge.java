@@ -9,6 +9,6 @@ import java.awt.*;
 public class Bridge extends Building {
     public Bridge(Player player) {
         super("Bridge",
-                Turnable.Half, player,new Point(0,0), new Point(0,1), new Point(0,2));
+                Turnable.Half, player, new Point(0, 0), new Point(0, 1), new Point(0, 2));
     }
 }

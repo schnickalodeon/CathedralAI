@@ -1,14 +1,8 @@
 package ai;
 
-import game_logic.Board;
-import game_logic.Building;
-import game_logic.Direction;
-import game_logic.Move;
-import game_logic.Player;
-import game_logic.buildings.Cathedral;
+import game_logic.*;
 
-
-import java.awt.Point;
+import java.awt.*;
 import java.util.List;
 import java.util.Random;
 
@@ -24,7 +18,7 @@ public class RandomAI extends AI {
         Building randomBuilding = getRandomBuilding(player.getBuildings());
         Direction randomDirection = getRandomDirection();
 
-        return new Move(randomPoint,randomBuilding,randomDirection,player);
+        return new Move(randomPoint, randomBuilding, randomDirection, player);
     }
 
 
@@ -38,16 +32,16 @@ public class RandomAI extends AI {
         return Direction.values()[iRandom];
     }
 
-    private static Building getRandomBuilding(List<Building> buildings){
+    private static Building getRandomBuilding(List<Building> buildings) {
         int buildingCount = buildings.size();
         return buildings.get(random.nextInt(buildingCount));
     }
 
-    private static Point getRandomPoint(){
+    private static Point getRandomPoint() {
         int x = random.nextInt(9);
         int y = random.nextInt(9);
 
-        return new Point(x,y);
+        return new Point(x, y);
     }
 
 }
