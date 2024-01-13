@@ -37,14 +37,14 @@ public class Board {
                 Point p = area.getArea().get(0);
                 return !a.contains(p);
             }).toList();
-            getConquerableArea(color, a);
+            conquer(color, a);
         }
     }
 
     private List<Area> getAreas(PlayerColor color, List<Point> emptyIterations) {
         List<Area> areas = new ArrayList<>();
         while (emptyIterations.size() != 0) {
-            final List<Point> reachableEmptyField = getReachableFields(color, emptyIterations.get(0));
+            final List<Point> reachableEmptyField = getReachableArea(color, emptyIterations.get(0));
             Area reachableEmptyArea = new Area(reachableEmptyField, reachableEmptyField.size());
             areas.add(reachableEmptyArea);
             emptyIterations = emptyIterations.stream().filter(point -> reachableEmptyField.stream().noneMatch(point1 -> point1.x == point.x && point.y == point1.y)).toList();
@@ -52,18 +52,14 @@ public class Board {
         return areas.stream().sorted(Comparator.comparingInt(Area::getAreaSize)).toList();
     }
 
-    private void getConquerableArea(PlayerColor color, Area area) {
-        if (area.isConquerable(game.getPreviousMoves(), color)) {
-            improvedConquer(color, area);
+    private void conquer(PlayerColor color, Area area) {
+        if(area.isConquerable(game.getPreviousMoves(), color)) {
+            FieldContent c = color.value == PlayerColor.BLACK.value ? FieldContent.BLACK_TERRITORY : FieldContent.WHITE_TERRITORY;
+            area.getArea().forEach(point -> setContent(point, c));
         }
     }
 
-    private void improvedConquer(PlayerColor color, Area area) {
-        FieldContent c = color.value == PlayerColor.BLACK.value ? FieldContent.BLACK_TERRITORY : FieldContent.WHITE_TERRITORY;
-        area.getArea().forEach(point -> setContent(point, c));
-    }
-
-    private List<Point> getReachableFields(PlayerColor color, Point p) {
+    private List<Point> getReachableArea(PlayerColor color, Point p) {
         List<Point> queue = new ArrayList<>();
         List<Point> emptyPoints = new ArrayList<>();
         List<Point> donePoints = new ArrayList<>();
