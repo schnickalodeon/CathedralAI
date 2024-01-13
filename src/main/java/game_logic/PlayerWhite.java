@@ -12,7 +12,7 @@ public class PlayerWhite extends Player {
 
     public PlayerWhite(Player white, Game game) {
         super(PlayerColor.WHITE, white.name, game, white.artificialIntelligent);
-        this.buildings = new ArrayList<Building>(white.buildings);
+        this.buildings = new ArrayList<>(white.buildings);
     }
 
 }

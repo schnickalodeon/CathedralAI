@@ -13,7 +13,7 @@ public class PlayerBlack extends Player {
 
     public PlayerBlack(Player black, Game game) {
         super(PlayerColor.BLACK, black.name, game, black.artificialIntelligent);
-        this.buildings = new ArrayList<Building>(black.buildings);
+        this.buildings = new ArrayList<>(black.buildings);
     }
 
 }

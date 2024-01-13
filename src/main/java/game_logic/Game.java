@@ -11,7 +11,6 @@ import java.util.ArrayList;
 
 public class Game {
     private static final boolean DEBUG = false;
-    private static final int TURN_MAX_TIME = 3;
     private static final String GAME_FILE_NAME = "Game.html";
     private final Board board;
     private final Player white;
@@ -56,21 +55,18 @@ public class Game {
         this.isFinished = false;
         this.turnNumber = game.turnNumber;
         this.start = game.start;
-        this.end =game.end;
+        this.end = game.end;
         this.gui = game.gui;
     }
 
     public boolean start() {
         createGameFile();
         start = ZonedDateTime.now();
-
         while (!isFinished) {
             turn();
         }
         end = ZonedDateTime.now();
-
         printResult();
-
         closeGameFile();
         return white.countPoints() > black.countPoints();
     }
@@ -84,24 +80,10 @@ public class Game {
     }
 
     public void turn() {
-        //LocalTime startTurn = LocalTime.now();
         Player player = getActivePlayer();
-        //LocalTime bufferStart;
         boolean wasSuccessful;
         do {
-
             Move move = player.getNextMove();
-/*          bufferStart = null;
-            long timeElapsed = startTurn.until(LocalTime.now(), ChronoUnit.SECONDS);
-            if(timeElapsed >= TURN_MAX_TIME)
-            {
-                System.out.println(player.toString() + ": " + player.getBuffer());
-                if(!player.hasBuffer()){
-                    System.out.println("Jüm häpt kien tiet mehr");
-                    break;
-                }
-                bufferStart = LocalTime.now();
-            }*/
 
             if (move == null) {
                 if (DEBUG) System.out.println("failed to move!");
@@ -112,13 +94,7 @@ public class Game {
                 if (DEBUG) {
                     System.out.println(move);
                 }
-
                 board.checkBoard(move.getPlayer().getColor());
-                /*if(bufferStart != null){
-                    long bufferUsed = bufferStart.until(LocalTime.now(),ChronoUnit.SECONDS);
-                    player.reduceBuffer(bufferUsed);
-                }*/
-
                 moves.add(move);
                 appendGameFile();
             }
@@ -136,7 +112,6 @@ public class Game {
     }
 
     public Player getActivePlayer() {
-        // White or Black
         return (turnNumber % 2 == 0) ? white : black;
     }
 

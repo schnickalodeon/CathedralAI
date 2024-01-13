@@ -18,7 +18,7 @@ public abstract class Player {
     protected List<Move> viableMoves = new ArrayList<>();
     protected int timeOuts = 0;
 
-    private int bufferInSeconds;
+    final private int bufferInSeconds;
 
     public PlayerColor getColor() {
         return color;
@@ -53,7 +53,7 @@ public abstract class Player {
         this.name = name;
         this.game = game;
         this.artificialIntelligent = artificialIntelligent;
-        this.bufferInSeconds = 2; //120;
+        this.bufferInSeconds = 2;
     }
 
     protected Player(Player player) {
@@ -124,8 +124,6 @@ public abstract class Player {
         return ml;
     }
 
-    //TODO describe every function
-    //for each x,y value, try every building in every rotation, check if its viable if so, add to a list.
     public List<Move> generateValidMoves(Building building) {
         List<Move> ml = new ArrayList<>();
         for (int x = 0; x < 10; x++) {
@@ -161,14 +159,6 @@ public abstract class Player {
         return "Spieler " + name + " (" + color + ")";
     }
 
-    public void incrementTimeOut() {
-        ++timeOuts;
-    }
-
-    public int getTimeOuts() {
-        return timeOuts;
-    }
-
     public List<Move> getViableMoves() {
         return viableMoves;
     }
@@ -176,11 +166,6 @@ public abstract class Player {
     public String getResult() {
         return name + " (" + color + ") scored " + countPoints() + " Points";
     }
-
-    public void reduceBuffer(long bufferUsed) {
-        bufferInSeconds -= bufferUsed;
-    }
-
 
     public List<Building> getBiggestBuilding(Predicate<Building> filter) {
         List<Building> bigBuildings = new ArrayList<>();
