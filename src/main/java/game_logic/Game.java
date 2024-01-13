@@ -113,7 +113,7 @@ public class Game {
                     System.out.println(move);
                 }
 
-                board.checkArea(move.getPlayer().getColor());
+                board.checkBoard(move.getPlayer().getColor());
                 /*if(bufferStart != null){
                     long bufferUsed = bufferStart.until(LocalTime.now(),ChronoUnit.SECONDS);
                     player.reduceBuffer(bufferUsed);

@@ -24,16 +24,13 @@ public class Board {
 
     }
 
-
-    public void checkArea(PlayerColor color) {
-        List<Point> reachableEmptyField;
-
+    public void checkBoard(PlayerColor color) {
         List<Point> emptyFields = getEmptyPoints();
+        List<Area> sortedAreas = getAreas(color, emptyFields);
+        conquerArea(color, sortedAreas);
+    }
 
-        List<Area> areas = getAreas(color, emptyFields);
-
-
-        List<Area> sortedAreas = areas.stream().sorted(Comparator.comparingInt(Area::getAreaSize)).toList();
+    private void conquerArea(PlayerColor color, List<Area> sortedAreas) {
         while (sortedAreas.size() > 1) {
             Area a = sortedAreas.get(0);
             sortedAreas = sortedAreas.stream().filter(area -> {
@@ -42,7 +39,6 @@ public class Board {
             }).toList();
             getConquerableArea(color, a);
         }
-
     }
 
     private List<Area> getAreas(PlayerColor color, List<Point> emptyIterations) {
@@ -53,46 +49,18 @@ public class Board {
             areas.add(reachableEmptyArea);
             emptyIterations = emptyIterations.stream().filter(point -> reachableEmptyField.stream().noneMatch(point1 -> point1.x == point.x && point.y == point1.y)).toList();
         }
-        return areas;
+        return areas.stream().sorted(Comparator.comparingInt(Area::getAreaSize)).toList();
     }
-
 
     private void getConquerableArea(PlayerColor color, Area area) {
-        ArrayList<Point> pList = new ArrayList<>();
         if (area.isConquerable(game.getPreviousMoves(), color)) {
-            conquerArea(color, area.getArea().get(0), pList);
+            improvedConquer(color, area);
         }
     }
 
-    private void conquerArea(PlayerColor color, Point p, List<Point> allPoints) {
-        //wenn das feld feld nicht dem spieler gehört, dann:
-        if (isOutOfBounds(p)) {
-            return;
-        }
-        for (Point p1 : allPoints) {
-            if (p1.x == p.x && p1.y == p.y) {
-                return;
-            }
-        }
-
-        allPoints.add(p);
-        if (getContent(p) == FieldContent.getOccupiedByPlayer(color)) {
-            return;
-        }
-
-        if (color == PlayerColor.BLACK) {
-            setContent(p, FieldContent.BLACK_TERRITORY);
-        } else {
-            setContent(p, FieldContent.WHITE_TERRITORY);
-        }
-        conquerArea(color, new Point(p.x - 1, p.y - 1), allPoints);
-        conquerArea(color, new Point(p.x, p.y - 1), allPoints);
-        conquerArea(color, new Point(p.x + 1, p.y - 1), allPoints);
-        conquerArea(color, new Point(p.x - 1, p.y), allPoints);
-        conquerArea(color, new Point(p.x + 1, p.y), allPoints);
-        conquerArea(color, new Point(p.x - 1, p.y + 1), allPoints);
-        conquerArea(color, new Point(p.x, p.y + 1), allPoints);
-        conquerArea(color, new Point(p.x + 1, p.y + 1), allPoints);
+    private void improvedConquer(PlayerColor color, Area area) {
+        FieldContent c = color.value == PlayerColor.BLACK.value ? FieldContent.BLACK_TERRITORY : FieldContent.WHITE_TERRITORY;
+        area.getArea().forEach(point -> setContent(point, c));
     }
 
     private List<Point> getReachableFields(PlayerColor color, Point p) {
@@ -103,29 +71,20 @@ public class Board {
         donePoints.add(p);
 
         while (queue.size() != 0) {
-            Point newP = queue.get(0);
-            queue.remove(newP);
-            if (getContent(newP) == FieldContent.getOccupiedByPlayer(color)) {
+            Point nPoint = queue.get(0);
+            queue.remove(nPoint);
+            if (getContent(nPoint) == FieldContent.getOccupiedByPlayer(color)) {
                 continue;
             }
 
-
-            FieldContent f = getContent(newP);
+            FieldContent f = getContent(nPoint);
             if (f == FieldContent.EMPTY ||
                     f == FieldContent.CATHEDRAL ||
                     color.value == PlayerColor.BLACK.value && f != FieldContent.BLACK_OCCUPIED ||
-                    color.value == PlayerColor.WHITE.value && f != FieldContent.WHITE_OCCUPIED
-            ) {
-                emptyPoints.add(newP);
+                    color.value == PlayerColor.WHITE.value && f != FieldContent.WHITE_OCCUPIED) {
+                emptyPoints.add(nPoint);
             }
-
-            Point[] points = {
-                    new Point(newP.x - 1, newP.y - 1), new Point(newP.x - 1, newP.y), new Point(newP.x - 1, newP.y + 1),
-                    new Point(newP.x, newP.y - 1), new Point(newP.x, newP.y + 1),
-                    new Point(newP.x + 1, newP.y - 1), new Point(newP.x + 1, newP.y), new Point(newP.x + 1, newP.y + 1),};
-
-            List<Point> realisticPoints = Arrays.stream(points).filter(point -> !isOutOfBounds(point)).toList();
-            List<Point> filteredNewPoints = realisticPoints.stream().filter(point -> donePoints.stream().noneMatch(point1 -> point.x == point1.x && point.y == point1.y)).toList();
+            List<Point> filteredNewPoints = getNewPoints(donePoints, nPoint);
 
             donePoints.addAll(filteredNewPoints);
             queue.addAll(filteredNewPoints);
@@ -133,12 +92,19 @@ public class Board {
         return emptyPoints;
     }
 
+    private List<Point> getNewPoints(List<Point> donePoints, Point p) {
+        Point[] points = {
+                new Point(p.x - 1, p.y - 1), new Point(p.x - 1, p.y), new Point(p.x - 1, p.y + 1),
+                new Point(p.x, p.y - 1), new Point(p.x, p.y + 1),
+                new Point(p.x + 1, p.y - 1), new Point(p.x + 1, p.y), new Point(p.x + 1, p.y + 1),};
 
-    //Acceptable methods below.
+        List<Point> realisticPoints = Arrays.stream(points).filter(point -> !isOutOfBounds(point)).toList();
+        return realisticPoints.stream().filter(point -> donePoints.stream().noneMatch(point1 -> point.x == point1.x && point.y == point1.y)).toList();
+    }
 
     public void setContent(List<Point> points, FieldContent content) {
-        points.forEach(p -> {
-            int index = getIndexByPoint(p);
+        points.forEach(point -> {
+            int index = getIndexByPoint(point);
             this.content[index] = content;
         });
     }
@@ -147,7 +113,6 @@ public class Board {
         int index = getIndexByPoint(point);
         this.content[index] = content;
     }
-
 
     public FieldContent getContent(Point p) {
         int index = getIndexByPoint(p);

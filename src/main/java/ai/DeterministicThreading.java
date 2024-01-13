@@ -24,7 +24,7 @@ public class DeterministicThreading implements Callable<MoveResult> {
     public MoveResult call() {
         test.getActivePlayer().makeMove(m.getMove());
         test.getActivePlayer().removeBuildiung(m.getMove().getBuilding());
-        test.getBoard().checkArea(m.getMove().getPlayer().getColor());
+        test.getBoard().checkBoard(m.getMove().getPlayer().getColor());
 
         List<MoveResult> listOfGoodMoves;
         List<Move> nextPossibleMoves = test.getActivePlayer().generateValidMoves(test.getActivePlayer().getBuildings());

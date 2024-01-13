@@ -34,7 +34,7 @@ public class Area {
     }
 
     public boolean isConquerable(ArrayList<Move> moves, PlayerColor color) {
-        return checkForMovesIn(moves, color) <= 2;
+        return checkForMovesIn(moves, color) < 2;
     }
 
     int checkForMovesIn(ArrayList<Move> moves, PlayerColor color) {

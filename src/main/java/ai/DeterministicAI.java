@@ -2,12 +2,10 @@ package ai;
 
 import ai.heuristic.*;
 import game_logic.*;
-import game_logic.buildings.Cathedral;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 /* Heuristiken:
  *
@@ -82,7 +80,7 @@ public class DeterministicAI extends AI {
                 Game test = new Game(player.getGame());
                 test.getActivePlayer().makeMove(m.getMove());
                 test.getActivePlayer().removeBuildiung(m.getMove().getBuilding());
-                test.getBoard().checkArea(test.getActivePlayer().getColor());
+                test.getBoard().checkBoard(test.getActivePlayer().getColor());
                 List<MoveResult> listOfGoodMoves;
                 listOfGoodMoves = this.getBestMove(test.getActivePlayer().generateValidMoves(test.getActivePlayer().getBuildings()), test, 3);
                 float sum = 0;

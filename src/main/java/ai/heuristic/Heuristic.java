@@ -2,7 +2,6 @@ package ai.heuristic;
 
 import game_logic.Game;
 import game_logic.Move;
-import game_logic.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,7 @@ public abstract class Heuristic implements Heuristicable {
         for(Move m: moves){
             testGame = new Game(game);
             testGame.getActivePlayer().makeMove(m);
-            testGame.getBoard().checkArea(m.getPlayer().getColor());
+            testGame.getBoard().checkBoard(m.getPlayer().getColor());
             float score =  calculateScore(m);
             MoveResult result = new MoveResult(m,score);
             results.add(result);
@@ -33,7 +32,7 @@ public abstract class Heuristic implements Heuristicable {
     public MoveResult evaluate(Move move, Game game){
         testGame = new Game(game);
         testGame.getActivePlayer().makeMove(move);
-        testGame.getBoard().checkArea(move.getPlayer().getColor());
+        testGame.getBoard().checkBoard(move.getPlayer().getColor());
         float score =  calculateScore(move);
         return new MoveResult(move,score);
     }
