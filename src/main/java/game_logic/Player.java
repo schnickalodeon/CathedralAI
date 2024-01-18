@@ -165,11 +165,8 @@ public abstract class Player {
                 .map(Building::getSize)
                 .max(Comparator.comparingInt(o -> o))
                 .orElse(0);
-        System.out.println(buildingSize);
-        List<Building> b = buildings.stream().
+        return buildings.stream().
                 filter(building -> building.getSize() == buildingSize)
                 .toList();
-        System.out.println(b);
-        return b;
     }
 }

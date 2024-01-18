@@ -49,7 +49,6 @@ public class Area {
                 !(movesInArea.get(0).getBuilding() == moves.get(0).getBuilding())) {
             movesInArea.get(0).revert();
         }
-        if(color.value == PlayerColor.BLACK.value) System.out.println(movesInArea.size());
         return movesInArea.size();
     }
 }
