@@ -50,7 +50,6 @@ public class OtherDeterministicAI extends AI {
         Heuristic maximizeScore = new MaximizeDeltaScoreHeuristic(scoreFactor);
         Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(areaSizeFactor * 100);
 
-
         this.addHeuristic(maximizeScore);
         this.addHeuristic(maximizeAreaSize);
     }
@@ -61,14 +60,10 @@ public class OtherDeterministicAI extends AI {
         Move nextMove;
         List<Building> triedBuildings = new ArrayList<>();
         do {
-            //find the biggest unplayed piece and look for moves.
-            List<Building> biggestUnused = player.getBiggestBuilding(b -> !triedBuildings.contains(b));
+            List<Building> biggestUnused = player.getBiggestBuilding(triedBuildings);
             List<Move> moveList;
-
-            moveList = player.generateValidMoves(hasCathedral(biggestUnused.get(0)) ? biggestUnused : player.getBuildings());
+            moveList = player.generateValidMoves(biggestUnused);
             nextMove = determineBestMove(moveList, player);
-
-            //if bigger buildings dont have valid moves go to smaller buildings.
             if (nextMove == null) triedBuildings.addAll(biggestUnused);
             if (biggestUnused.isEmpty()) return null;
         }
@@ -77,20 +72,14 @@ public class OtherDeterministicAI extends AI {
         return nextMove;
     }
 
-    private boolean hasCathedral(Building biggestUnused) {
-        return biggestUnused.getSize() == 6;
-    }
-
     private Move determineBestMove(List<Move> possibleMoveList, Player player) {
         List<MoveResult> promisingMoves;
-
-        promisingMoves = this.getBestMove(possibleMoveList, player.getGame(), 30);
-
-
+        promisingMoves = this.getBestMove(possibleMoveList, player.getGame(), 100);
         List<Future<MoveResult>> tmpValues = null;
         ExecutorService service = Executors.newFixedThreadPool(20);
         List<Callable<MoveResult>> threads = new ArrayList<>();
         List<MoveResult> PromisingNonNullMoves = promisingMoves.stream().filter(Objects::nonNull).toList();
+
 
         for (MoveResult m : PromisingNonNullMoves) {
             threads.add(new DeterministicThreading(this, player.getGame(), m));

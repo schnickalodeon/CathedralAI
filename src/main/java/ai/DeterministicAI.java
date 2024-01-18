@@ -39,7 +39,7 @@ public class DeterministicAI extends AI {
         Move nextMove;
         List<Building> triedBuildings = new ArrayList<>();
         do {
-            List<Building> biggestunused = player.getBiggestBuilding(b -> !triedBuildings.contains(b));
+            List<Building> biggestunused = player.getBiggestBuilding(triedBuildings);
             List<Move> moveList;
             if (biggestunused.size() == 1) {
                 if (biggestunused.get(0).getSize() == 6) {

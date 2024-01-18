@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class Board {
-    private static final int FIELD_COUNT = 100;
+    public static final int FIELD_COUNT = 100;
+    public static final int fieldSize = 10;
     private FieldContent[] content = new FieldContent[FIELD_COUNT];
     private final Game game;
 

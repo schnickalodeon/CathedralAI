@@ -5,8 +5,8 @@ import game_logic.buildings.Cathedral;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public abstract class Player {
@@ -38,14 +38,6 @@ public abstract class Player {
 
     public Game getGame() {
         return game;
-    }
-
-    public boolean hasBuffer() {
-        return bufferInSeconds > 0;
-    }
-
-    public int getBuffer() {
-        return bufferInSeconds;
     }
 
     protected Player(PlayerColor color, String name, Game game, ArtificialIntelligent artificialIntelligent) {
@@ -126,8 +118,8 @@ public abstract class Player {
 
     public List<Move> generateValidMoves(Building building) {
         List<Move> ml = new ArrayList<>();
-        for (int x = 0; x < 10; x++) {
-            for (int y = 0; y < 10; y++) {
+        for (int x = 0; x < Board.fieldSize; x++) {
+            for (int y = 0; y < Board.fieldSize; y++) {
                 //If moves for a specific Building should be generated, use only these.
                 for (Building b : getPlaceableBuildings(building)) {
                     for (int r = 0; r < b.getTurnable(); r++) {
@@ -167,19 +159,17 @@ public abstract class Player {
         return name + " (" + color + ") scored " + countPoints() + " Points";
     }
 
-    public List<Building> getBiggestBuilding(Predicate<Building> filter) {
-        List<Building> bigBuildings = new ArrayList<>();
-        List<Building> filteredBuildings = buildings.stream().filter(filter).toList();
-        int maxSize = 0;
-        for (Building b : filteredBuildings) {
-            if (b.getSize() > maxSize) {
-                bigBuildings.clear();
-                bigBuildings.add(b);
-                maxSize = b.getSize();
-            } else if (b.getSize() == maxSize) {
-                bigBuildings.add(b);
-            }
-        }
-        return bigBuildings;
+    public List<Building> getBiggestBuilding(List<Building> triedBuildings) {
+        int buildingSize  = buildings.stream()
+                .filter(building -> !triedBuildings.contains(building))
+                .map(Building::getSize)
+                .max(Comparator.comparingInt(o -> o))
+                .orElse(0);
+        System.out.println(buildingSize);
+        List<Building> b = buildings.stream().
+                filter(building -> building.getSize() == buildingSize)
+                .toList();
+        System.out.println(b);
+        return b;
     }
 }
