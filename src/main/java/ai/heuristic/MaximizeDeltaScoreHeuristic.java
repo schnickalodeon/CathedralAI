@@ -15,14 +15,13 @@ public class MaximizeDeltaScoreHeuristic extends Heuristic {
 
     @Override
     protected float calculateScore(Move move) {
-        int ourScore = getScore(testGame.getActivePlayer());
-        int opponentScore = getScore(testGame.getInactivePlayer());
+       final int ourScore = getScore(testGame.getActivePlayer());
+        final int opponentScore = getScore(testGame.getInactivePlayer());
 
         return (opponentScore - (ourScore-move.getBuilding().getSize())) * factor;
     }
 
     private int getScore(Player player){
-        int score = player.getBuildings().stream().mapToInt(Building::getSize).sum();
-        return score;
+        return player.getBuildings().stream().mapToInt(Building::getSize).sum();
     }
 }

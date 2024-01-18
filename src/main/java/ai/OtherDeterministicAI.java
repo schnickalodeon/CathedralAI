@@ -9,10 +9,11 @@ import game_logic.Building;
 import game_logic.Move;
 import game_logic.Player;
 
-import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 /* Heuristiken:
  *
@@ -22,7 +23,6 @@ import java.util.stream.Collectors;
  */
 public class OtherDeterministicAI extends AI {
 
-    private static final Random random = new Random();
     private final float areaSizeFactor;
     private final float scoreFactor;
 
@@ -58,67 +58,56 @@ public class OtherDeterministicAI extends AI {
 
     @Override
     public Move getMove(Board board, Player player) {
-        //Wir wollen optimieren für delta anzahlzüge in 3 zügen zukunft.
         Move nextMove;
         List<Building> triedBuildings = new ArrayList<>();
-
         do {
-            List<Building> biggestunused = player.getBiggestBuilding(b -> !triedBuildings.contains(b));
+            //find the biggest unplayed piece and look for moves.
+            List<Building> biggestUnused = player.getBiggestBuilding(b -> !triedBuildings.contains(b));
             List<Move> moveList;
-            if (biggestunused.size() == 1) {
-                if (biggestunused.get(0).getSize() == 6) moveList = player.generateValidMoves(biggestunused);
-                else {
-                    moveList = player.generateValidMoves(player.getBuildings());
-                }
-            } else {
-                moveList = player.generateValidMoves(player.getBuildings());
-            }
+
+            moveList = player.generateValidMoves(hasCathedral(biggestUnused.get(0)) ? biggestUnused : player.getBuildings());
             nextMove = determineBestMove(moveList, player);
-            if (nextMove == null) triedBuildings.addAll(biggestunused);
-            if (biggestunused.isEmpty()) return null;
+
+            //if bigger buildings dont have valid moves go to smaller buildings.
+            if (nextMove == null) triedBuildings.addAll(biggestUnused);
+            if (biggestUnused.isEmpty()) return null;
         }
         while (nextMove == null);
 
         return nextMove;
     }
 
-    //Schauen uns für die n vielversprechendsten züge die "nächsten" m moves von uns an.
-    //wobei n,m ausprobiert werden muss.
-    //sind die metriken zu stark??
-
-    //Versuche anzahl der unspielbaren punkte des gegners maximieren.
+    private boolean hasCathedral(Building biggestUnused) {
+        return biggestUnused.getSize() == 6;
+    }
 
     private Move determineBestMove(List<Move> possibleMoveList, Player player) {
         List<MoveResult> promisingMoves;
 
-        ZonedDateTime start;
-        ZonedDateTime end;
-        //wir holen 100 moves, von allen moves, alle moves müssen berechnet werden. dauert nicht lange!
-        promisingMoves = this.getBestMove(possibleMoveList, player.getGame(), 100);
+        promisingMoves = this.getBestMove(possibleMoveList, player.getGame(), 30);
 
 
         List<Future<MoveResult>> tmpValues = null;
         ExecutorService service = Executors.newFixedThreadPool(20);
         List<Callable<MoveResult>> threads = new ArrayList<>();
         List<MoveResult> PromisingNonNullMoves = promisingMoves.stream().filter(Objects::nonNull).toList();
+
         for (MoveResult m : PromisingNonNullMoves) {
             threads.add(new DeterministicThreading(this, player.getGame(), m));
         }
+        int i = 0;
+
         try {
             tmpValues = service.invokeAll(threads);
+            do {
+                if (tmpValues.get(i).isDone()) {
+                    i++;
+                }
+            } while (i < tmpValues.size());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        int i = 0;
-        do {
-            assert tmpValues != null;
-            if (tmpValues.get(i).isDone()) {
-                i++;
-            }
-        } while (i < tmpValues.size());
         return getBestMoveFromFutures(tmpValues);
-
     }
 
     private Move getBestMoveFromFutures(List<Future<MoveResult>> tmpValues) {
@@ -136,7 +125,7 @@ public class OtherDeterministicAI extends AI {
                 exception.printStackTrace();
                 return null;
             }
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     public void printBestNumbers() {

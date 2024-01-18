@@ -15,28 +15,27 @@ public abstract class Heuristic implements Heuristicable {
         this.factor = factor;
     }
 
-    public List<MoveResult> evaluate(List<Move> moves, Game game){
+    public List<MoveResult> evaluate(List<Move> moves, Game game) {
         List<MoveResult> results = new ArrayList<>();
 
-        for(Move m: moves){
+        moves.forEach(move -> {
             testGame = new Game(game);
-            testGame.getActivePlayer().makeMove(m);
-            testGame.getBoard().checkBoard(m.getPlayer().getColor());
-            float score =  calculateScore(m);
-            MoveResult result = new MoveResult(m,score);
+            testGame.getActivePlayer().makeMove(move);
+            testGame.getBoard().checkBoard(move.getPlayer().getColor());
+            float score = calculateScore(move);
+            MoveResult result = new MoveResult(move, score);
             results.add(result);
-        }
+        });
         return results;
     }
 
-    public MoveResult evaluate(Move move, Game game){
+    public MoveResult evaluate(Move move, Game game) {
         testGame = new Game(game);
         testGame.getActivePlayer().makeMove(move);
         testGame.getBoard().checkBoard(move.getPlayer().getColor());
-        float score =  calculateScore(move);
-        return new MoveResult(move,score);
+        float score = calculateScore(move);
+        return new MoveResult(move, score);
     }
-
 
 
     protected abstract float calculateScore(Move move);

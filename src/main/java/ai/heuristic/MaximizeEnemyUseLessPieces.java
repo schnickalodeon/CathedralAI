@@ -20,7 +20,6 @@ public class MaximizeEnemyUseLessPieces extends Heuristic
             if ( x < 10) {
                 score += (10 - x);
             }
-
         }
         return score;
     }

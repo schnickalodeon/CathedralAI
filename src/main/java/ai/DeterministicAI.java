@@ -14,23 +14,19 @@ import java.util.Random;
  *
  */
 public class DeterministicAI extends AI {
-    float possibleMovesFactor;
-    float areaSizeFactor;
-    float scoreFactor;
+
 
     private static final Random random = new Random();
 
-    public DeterministicAI(float x1, float x2, float x3) {
-        this.possibleMovesFactor = x1;
-        this.areaSizeFactor = x2;
-        this.scoreFactor = x3;
-        addHeuristics();
+    public DeterministicAI(float possibleMoves, float areaSizeFactor, float scoreFactor) {
+
+        addHeuristics(possibleMoves, areaSizeFactor, scoreFactor);
     }
 
-    private void addHeuristics() {
-        Heuristic maximizeScore = new MaximizeDeltaScoreHeuristic(scoreFactor);
-        Heuristic maximizePossibleMoves = new MaximizeDeltaPosibleMovesHeuristic(possibleMovesFactor);
-        Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(areaSizeFactor);
+    private void addHeuristics(float possibleMoves, float areaSize, float score) {
+        Heuristic maximizePossibleMoves = new MaximizeDeltaPosibleMovesHeuristic(possibleMoves);
+        Heuristic maximizeScore = new MaximizeDeltaScoreHeuristic(score);
+        Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(areaSize);
 
         this.addHeuristic(maximizeScore);
         this.addHeuristic(maximizePossibleMoves);
@@ -40,10 +36,8 @@ public class DeterministicAI extends AI {
 
     @Override
     public Move getMove(Board board, Player player) {
-        //Wir wollen optimieren für delta anzahlzüge in 3 zügen zukunft.
         Move nextMove;
         List<Building> triedBuildings = new ArrayList<>();
-
         do {
             List<Building> biggestunused = player.getBiggestBuilding(b -> !triedBuildings.contains(b));
             List<Move> moveList;
@@ -69,41 +63,49 @@ public class DeterministicAI extends AI {
     private Move determineBestMove(List<Move> possibleMoveList, Player player) {
 
         List<MoveResult> PromisingMoves;
-        PromisingMoves = this.getBestMove(possibleMoveList, player.getGame(), 3);
+        PromisingMoves = this.getBestMove(possibleMoveList, player.getGame(), 100);
 
         List<Float> allTheGoodMoves = new ArrayList<>();
-        int moveSelector = 0;
+        int bestMovePointer = 0;
         float moveScore = 0;
         int pointer = 0;
-        for (MoveResult m : PromisingMoves) {
-            if (m != null) {
+
+        for (MoveResult moveResult : PromisingMoves) {
+            if (moveResult != null) {
                 Game test = new Game(player.getGame());
-                test.getActivePlayer().makeMove(m.getMove());
-                test.getActivePlayer().removeBuildiung(m.getMove().getBuilding());
+                test.getActivePlayer().makeMove(moveResult.getMove());
+                test.getActivePlayer().removeBuildiung(moveResult.getMove().getBuilding());
                 test.getBoard().checkBoard(test.getActivePlayer().getColor());
                 List<MoveResult> listOfGoodMoves;
+
+                //get 3 good moves.
                 listOfGoodMoves = this.getBestMove(test.getActivePlayer().generateValidMoves(test.getActivePlayer().getBuildings()), test, 3);
+
+
                 float sum = 0;
                 int notNullCounter = 0;
-                for (MoveResult mr : listOfGoodMoves) {
-                    if (mr != null)
-                        sum += mr.getScore();
+                for (MoveResult goodMoves : listOfGoodMoves) {
+                    if (goodMoves != null)
+                        sum += goodMoves.getScore();
                     notNullCounter++;
                 }
+
+                //sometimes there is less than 3 valid moves.
                 sum /= notNullCounter;
+
                 if (moveScore < sum) {
                     moveScore = sum;
-                    moveSelector = pointer;
+                    bestMovePointer = pointer;
                 }
                 pointer++;
             }
         }
 
-        return PromisingMoves.get(moveSelector).getMove();
+        return PromisingMoves.get(bestMovePointer).getMove();
 
     }
 
     public void printBestNumbers() {
-        System.out.println("x1= " + possibleMovesFactor + " ,x2= " + areaSizeFactor + ",x3=" + scoreFactor);
+        System.out.println("factors not implemented, rethink design.");
     }
 }
