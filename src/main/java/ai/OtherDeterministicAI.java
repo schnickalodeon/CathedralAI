@@ -1,18 +1,12 @@
 package ai;
 
-import ai.heuristic.Heuristic;
-import ai.heuristic.MaximizeDeltaAreasizeHeuristic;
-import ai.heuristic.MaximizeDeltaScoreHeuristic;
-import ai.heuristic.MoveResult;
+import ai.heuristic.*;
 import game_logic.Board;
 import game_logic.Building;
 import game_logic.Move;
 import game_logic.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.*;
 
 /* Heuristiken:
@@ -47,13 +41,14 @@ public class OtherDeterministicAI extends AI {
     }
 
     private void addHeuristics() {
-        Heuristic maximizeScore = new MaximizeDeltaScoreHeuristic(scoreFactor);
-        Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(areaSizeFactor * 100);
+        Heuristic maximizeScore = new MaximizeDeltaScoreHeuristic(scoreFactor );
+        Heuristic maximizeAreaSize = new MaximizeDeltaAreasizeHeuristic(areaSizeFactor*5);
+        Heuristic usablePieces = new MaximizeEnemyUseLessPieces(20);
 
         this.addHeuristic(maximizeScore);
         this.addHeuristic(maximizeAreaSize);
+        this.addHeuristic(usablePieces);
     }
-
 
     @Override
     public Move getMove(Board board, Player player) {
@@ -62,17 +57,22 @@ public class OtherDeterministicAI extends AI {
         do {
             List<Building> biggestUnused = player.getBiggestBuilding(triedBuildings);
             List<Move> moveList = player.generateValidMoves(biggestUnused);
+            if (biggestUnused.size() != 0 && biggestUnused.get(0).getSize() == 6) {
+                Random r = new Random();
+                return moveList.get(r.nextInt(moveList.size()));
+            }
             nextMove = determineBestMove(moveList, player);
             if (nextMove == null) triedBuildings.addAll(biggestUnused);
             if (biggestUnused.isEmpty()) return null;
         }
         while (nextMove == null);
+        System.out.println(nextMove);
         return nextMove;
     }
 
     private Move determineBestMove(List<Move> possibleMoveList, Player player) {
         List<MoveResult> promisingMoves;
-        promisingMoves = this.getBestMove(possibleMoveList, player.getGame(), 100);
+        promisingMoves = this.getBestMove(possibleMoveList, player.getGame(), 5);
         List<Future<MoveResult>> tmpValues = null;
 
         ExecutorService service = Executors.newFixedThreadPool(20);
@@ -87,7 +87,7 @@ public class OtherDeterministicAI extends AI {
         try {
             tmpValues = service.invokeAll(threads);
             do {
-                if (tmpValues.get(i).isDone()) {
+                if (i < tmpValues.size() && tmpValues.get(i).isDone()) {
                     i++;
                 }
             } while (i < tmpValues.size());
@@ -105,7 +105,7 @@ public class OtherDeterministicAI extends AI {
 
     private List<MoveResult> getResultsFromFuture(List<Future<MoveResult>> tmpValues) {
 
-        return tmpValues.stream().map(future -> {
+        return tmpValues.stream().filter(Objects::nonNull).map(future -> {
             try {
                 return future.get();
             } catch (InterruptedException | ExecutionException exception) {
@@ -117,5 +117,9 @@ public class OtherDeterministicAI extends AI {
 
     public void printBestNumbers() {
         System.out.println("x2= " + areaSizeFactor + ",x3=" + scoreFactor);
+    }
+
+    public String toString() {
+        return "Area Factor: " + this.areaSizeFactor + ", Score Factor: " + this.scoreFactor;
     }
 }

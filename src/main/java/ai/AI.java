@@ -20,7 +20,9 @@ public abstract class AI implements ArtificialIntelligent {
         List<MoveResult> bestMove = new ArrayList<>();
 
         possibleMoves.forEach(m -> {
-            float score = calculateScore(m, game);
+            Game g =  new Game(game);
+            g.getActivePlayer().makeMove(m);
+            float score = calculateScore(m, g);
             results.add(new MoveResult(m, score));
         });
 

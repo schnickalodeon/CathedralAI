@@ -48,6 +48,13 @@ public class Game {
         gui.setGame(this);
     }
 
+    public Game(ArtificialIntelligent artificialIntelligentWhite, ArtificialIntelligent artificialIntelligentBlack) {
+        this.board = new Board(this);
+        this.white = new PlayerWhite("Alice", this, artificialIntelligentWhite);
+        this.black = new PlayerBlack("Bob", this, artificialIntelligentBlack);
+        this.isFinished = false;
+    }
+
     public Game(Game game) {
         this.board = new Board(game.board, this);
         this.white = new PlayerWhite(game.white, this);
@@ -56,7 +63,6 @@ public class Game {
         this.turnNumber = game.turnNumber;
         this.start = game.start;
         this.end = game.end;
-        this.gui = game.gui;
     }
 
     public boolean start() {

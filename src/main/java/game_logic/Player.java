@@ -166,7 +166,7 @@ public abstract class Player {
                 .max(Comparator.comparingInt(o -> o))
                 .orElse(0);
         return buildings.stream().
-                filter(building -> building.getSize() == buildingSize)
+                filter(building -> building.getSize() >= (buildingSize == 6 ? buildingSize : buildingSize - 2))
                 .toList();
     }
 }

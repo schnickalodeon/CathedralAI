@@ -28,16 +28,17 @@ public class DeterministicThreading implements Callable<MoveResult> {
 
         List<MoveResult> listOfGoodMoves;
         List<Move> nextPossibleMoves = test.getActivePlayer().generateValidMoves(test.getActivePlayer().getBuildings());
-        listOfGoodMoves = ai.getBestMove(nextPossibleMoves, test, 50);
-
+        listOfGoodMoves = ai.getBestMove(nextPossibleMoves, test, 5).stream()
+                .filter(Objects::nonNull).toList();
         return new MoveResult(this.m.getMove(),
-                listOfGoodMoves.stream().map(MoveResult::getScore).filter(Objects::nonNull).max((o1, o2) -> (int) (o1 - o2)).orElse(0f));
-       /* double sum = validResults.stream().mapToDouble(MoveResult::getScore).sum();
-        sum /= validResults.size();
-        return new MoveResult(m.getMove(), (float) sum);*/
+                listOfGoodMoves.stream()
+                        .map(MoveResult::getScore)
+                        .filter(Objects::nonNull)
+                        .max((o1, o2) -> (int) (o1 - o2))
+                        .orElse(0f));
     }
 
-    private List<MoveResult> makeOneMove(){
+    private List<MoveResult> makeOneMove() {
         List<MoveResult> listOfGoodMoves;
         List<Move> nextPossibleMoves = test.getActivePlayer().generateValidMoves(test.getActivePlayer().getBuildings());
         listOfGoodMoves = ai.getBestMove(nextPossibleMoves, test, 30);

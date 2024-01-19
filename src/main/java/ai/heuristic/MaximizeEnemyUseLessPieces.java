@@ -3,24 +3,25 @@ package ai.heuristic;
 import game_logic.Building;
 import game_logic.Move;
 
-public class MaximizeEnemyUseLessPieces extends Heuristic
-{
-    public MaximizeEnemyUseLessPieces(float factor)
-    {
+public class MaximizeEnemyUseLessPieces extends Heuristic {
+    public MaximizeEnemyUseLessPieces(float factor) {
         super(factor);
     }
 
     @Override
     protected float calculateScore(Move move) {
-        int score=0;
-        int sum=0;
-        for(Building b : testGame.getInactivePlayer().getBuildings()) {
-            int x =testGame.getInactivePlayer().generateValidMoves(b).size();
-            sum +=x;
-            if ( x < 10) {
-                score += (10 - x);
-            }
-        }
-        return score;
+        testGame.getActivePlayer().makeMove(move);
+        int validMoves = testGame.getInactivePlayer().getBuildings()
+                .stream()
+                .filter(building -> testGame.getInactivePlayer().generateValidMoves(building).size() != 0)
+                .mapToInt(Building::getSize)
+                .sum();
+        int validOpponentsMoves = testGame.getActivePlayer().getBuildings()
+                .stream()
+                .filter(building -> testGame.getActivePlayer().generateValidMoves(building).size() != 0)
+                .mapToInt(Building::getSize)
+                .sum();
+        return validMoves - validOpponentsMoves;
+
     }
 }

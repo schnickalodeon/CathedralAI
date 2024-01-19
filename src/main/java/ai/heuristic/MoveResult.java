@@ -19,4 +19,8 @@ public class MoveResult implements Comparable<MoveResult>{
     public int compareTo(MoveResult o) {
         return Float.compare(this.getScore(), o.getScore());
     }
+
+    public String toString(){
+        return this.move +", score: "+score;
+    }
 }

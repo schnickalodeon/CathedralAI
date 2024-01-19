@@ -8,22 +8,20 @@ import processing.core.PApplet;
 
 import java.util.Random;
 
-public class Program extends PApplet {
-    public static GUI gui;
-    private static Game game;
+public class Program /* extends PApplet*/{
 
     public static void main(String[] args) {
-        gui = new GUI();
         Random r = new Random();
-        ArtificialIntelligent alice = new ActuallyAHuman();
+        ArtificialIntelligent alice = new OtherDeterministicAI(r.nextFloat(), r.nextFloat());
         ArtificialIntelligent bob = new OtherDeterministicAI(r.nextFloat(), r.nextFloat());
-        for (int i = 0; i < 100; i++) {
-            game = new Game(bob, alice, gui);
-            gui.setPlayers(game);
+        for (int i = 0; i < 10; i++) {
+            //public static GUI gui;
+            Game game = new Game(bob, alice);
             boolean didWhitewin = game.start();
 
             if (didWhitewin) {
-                bob = new DeterministicAI(r.nextFloat(), r.nextFloat(), r.nextFloat());
+                bob = alice;
+                alice = new OtherDeterministicAI(r.nextFloat(), r.nextFloat());
             } else {
                 alice = new OtherDeterministicAI(r.nextFloat(), r.nextFloat());
             }
@@ -32,7 +30,7 @@ public class Program extends PApplet {
         alice.printBestNumbers();
     }
 
-    public void settings() {
+   /* public void settings() {
         size(800, 800);
     }
 
@@ -42,6 +40,6 @@ public class Program extends PApplet {
 
     public void draw() {
         gui.draw();
-    }
+    }*/
 
 }
